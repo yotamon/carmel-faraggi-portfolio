@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const links = [
   { href: "/work", label: "WORK" },
@@ -17,12 +17,24 @@ function isCurrent(pathname: string, href: string) {
 export function Navigation() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => setOpen(false), [pathname]);
 
   useEffect(() => {
     document.body.classList.toggle("menu-open", open);
     return () => document.body.classList.remove("menu-open");
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      requestAnimationFrame(() => menuButtonRef.current?.focus());
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
   }, [open]);
 
   return (
@@ -43,11 +55,14 @@ export function Navigation() {
           LONDON, UK
         </Link>
         <button
+          ref={menuButtonRef}
           className={`menu-toggle ${open ? "is-open" : ""}`}
           type="button"
           aria-label={open ? "Close navigation" : "Open navigation"}
           aria-expanded={open}
           aria-controls="mobile-menu"
+          onPointerDown={() => menuButtonRef.current?.setAttribute("data-pointer", "")}
+          onKeyDown={() => menuButtonRef.current?.removeAttribute("data-pointer")}
           onClick={() => setOpen((value) => !value)}
         >
           <span />
@@ -56,7 +71,7 @@ export function Navigation() {
         </button>
       </header>
 
-      <div id="mobile-menu" className={`mobile-menu ${open ? "is-open" : ""}`} aria-hidden={!open}>
+      <div id="mobile-menu" className={`mobile-menu ${open ? "is-open" : ""}`} role="dialog" aria-modal="true" aria-hidden={!open}>
         <nav aria-label="Mobile navigation">
           {links.map((link) => (
             <Link

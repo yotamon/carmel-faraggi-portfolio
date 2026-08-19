@@ -49,6 +49,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .desktop-nav a, .location-top { transition: color 180ms ease; }
 .desktop-nav a:hover, .desktop-nav a:focus-visible, .desktop-nav a.is-active, .location-top:hover, .location-top:focus-visible { color: var(--red); }
+.desktop-nav a:focus-visible, .location-top:focus-visible { outline: 2px solid var(--red); outline-offset: 7px; }
+.desktop-nav a[href="/work"].is-active { position: relative; }
+.desktop-nav a[href="/work"].is-active::after { content: ""; position: absolute; left: 0; right: 0; bottom: -22px; height: 1px; background: var(--red); }
 .location-top { margin-left: auto; }
 
 .menu-toggle {
@@ -69,9 +72,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
   transform-origin: center;
   transition: transform 180ms ease, opacity 180ms ease;
 }
-.menu-toggle.is-open span:nth-child(1) { transform: translateY(11px) rotate(45deg); }
+.menu-toggle:focus { outline: none; }
+.menu-toggle:focus-visible:not([data-pointer]) { outline: 2px solid var(--red); outline-offset: 2px; }
+.menu-toggle.is-open span:nth-child(1) { transform: translateY(10px) rotate(45deg); }
 .menu-toggle.is-open span:nth-child(2) { opacity: 0; }
-.menu-toggle.is-open span:nth-child(3) { transform: translateY(-11px) rotate(-45deg); }
+.menu-toggle.is-open span:nth-child(3) { transform: translateY(-10px) rotate(-45deg); }
 
 .mobile-menu {
   position: fixed;
@@ -145,7 +150,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   right: clamp(110px, 12vw, 190px);
   bottom: 22vh;
   z-index: 3;
-  display: flex;
+  display: none;
   gap: 28px;
   align-items: center;
   font-size: 13px;
@@ -278,6 +283,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .contact-intro { max-width: 440px; margin-left: 9px; }
 .contact-intro h1 { margin: 0 0 54px; font-size: clamp(31px, 2.4vw, 40px); font-weight: 400; line-height: 1.25; letter-spacing: -.03em; }
 .contact-intro a { display: inline-block; font-size: clamp(18px, 1.65vw, 27px); border-bottom: 1px solid; transition: color 180ms ease; }
+.contact-intro a { position: relative; }
+.contact-intro a::before { content: ""; position: absolute; inset: -11px 0; }
 .contact-intro a:hover, .contact-intro a:focus-visible { color: var(--red); }
 .contact-form { position: relative; padding-top: 65px; }
 .field { position: relative; margin-bottom: 41px; border-bottom: 2px solid var(--black); }
@@ -359,7 +366,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   :root { --pad: clamp(20px, 6vw, 24px); }
   .site-header { min-height: 118px; padding: 0 var(--pad); justify-content: flex-end; }
   .desktop-nav, .location-top { display: none; }
-  .menu-toggle { display: block; margin-top: -18px; margin-right: -7px; }
+  .menu-toggle { display: block; width: 42px; margin-top: -48px; margin-right: -11px; padding: 12px 0; }
+  .menu-toggle span { width: 28px; height: 2px; margin: 8px 0 8px auto; }
   .mobile-menu { display: block; }
   .mobile-only { display: block; }
 
