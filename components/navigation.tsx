@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -43,24 +42,24 @@ export function Navigation() {
       <header className="site-header">
         <nav className="desktop-nav" aria-label="Primary navigation">
           {links.map((link) => (
-            <Link
+            <a
               key={link.href}
               href={link.href}
               className={isCurrent(pathname, link.href) ? "is-active" : ""}
             >
               {link.label}
-            </Link>
+            </a>
           ))}
         </nav>
         <div className="header-meta">
           {pathname !== "/" ? (
-            <Link className="home-back-link" href="/" aria-label="Back to Carmel Faraggi home">
+            <a className="home-back-link" href="/" aria-label="Back to Carmel Faraggi home">
               <span aria-hidden="true">←</span> HOME
-            </Link>
+            </a>
           ) : null}
-          <Link className="location location-top" href="/" aria-label="Carmel Faraggi home">
+          <a className="location location-top" href="/" aria-label="Carmel Faraggi home">
             LONDON, UK
-          </Link>
+          </a>
         </div>
         <button
           ref={menuButtonRef}
@@ -82,7 +81,7 @@ export function Navigation() {
       <div id="mobile-menu" className={`mobile-menu ${open ? "is-open" : ""}`} role="dialog" aria-modal="true" aria-hidden={!open}>
         <nav aria-label="Mobile navigation">
           {mobileLinks.map((link) => (
-            <Link
+            <a
               key={link.href}
               href={link.href}
               tabIndex={open ? 0 : -1}
@@ -90,7 +89,7 @@ export function Navigation() {
               onClick={() => setOpen(false)}
             >
               {link.label}
-            </Link>
+            </a>
           ))}
         </nav>
         <p className="mobile-menu-location">LONDON, UK</p>

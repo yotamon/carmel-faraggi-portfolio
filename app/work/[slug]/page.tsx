@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Navigation } from "@/components/navigation";
 import { ProjectArtwork } from "@/components/project-artwork";
@@ -49,8 +48,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           <p>IDENTITY</p><p>IMAGE</p><p>ATMOSPHERE</p>
         </div>
         <footer className="case-study-footer">
-          <Link href={`/work/${next.slug}`}>NEXT PROJECT <span aria-hidden="true">→</span><strong>{next.title}</strong></Link>
-          <Link href="/contact">HAVE A PROJECT IN MIND? <span aria-hidden="true">→</span></Link>
+          <a href={`/work/${next.slug}`}>NEXT PROJECT <span aria-hidden="true">→</span><strong>{next.title}</strong></a>
+          <a href="/contact">HAVE A PROJECT IN MIND? <span aria-hidden="true">→</span></a>
         </footer>
       </article>
     </main>

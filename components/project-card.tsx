@@ -1,11 +1,10 @@
-import Link from "next/link";
 import type { Project } from "@/lib/projects";
 import { ProjectArtwork } from "./project-artwork";
 
 export function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <article className={`project-card project-${project.slug} layout-${project.layout}`} style={{ "--item": index } as React.CSSProperties}>
-      <Link href={`/work/${project.slug}`} aria-label={`View ${project.title} project`}>
+      <a href={`/work/${project.slug}`} aria-label={`View ${project.title} project`}>
         <ProjectArtwork project={project} />
         <div className="project-card-info">
           <div>
@@ -17,7 +16,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
           </div>
           <span className="arrow" aria-hidden="true">→</span>
         </div>
-      </Link>
+      </a>
     </article>
   );
 }
