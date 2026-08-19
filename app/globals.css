@@ -355,14 +355,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .send-button { min-height: 64px; }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1199px) {
   :root { --pad: 32px; }
   .about-content { width: calc(100vw - (2 * var(--pad))); grid-template-columns: minmax(250px, .8fr) minmax(280px, 1.2fr); gap: 32px; }
   .contact-content { grid-template-columns: 38% 1fr; gap: 50px; }
   .project-card > a, .project-card.layout-right > a { grid-template-columns: minmax(0, 62%) minmax(230px, 1fr); }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1199px) {
   :root { --pad: clamp(20px, 6vw, 24px); }
   .site-header { min-height: 118px; padding: 0 var(--pad); justify-content: flex-end; }
   .desktop-nav, .location-top { display: none; }
@@ -467,6 +467,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .contact-page { min-height: 0; height: max(100svh, 923px); }
   .contact-content { padding-top: 104px; padding-bottom: 0; }
   .contact-form { padding-top: 40px; }
+}
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .about-red-plane { clip-path: polygon(94% 0, 100% 0, 100% 100%, 75% 100%); }
+  .contact-content { grid-template-columns: 56% minmax(380px, 1fr); gap: 7vw; }
 }
 
 @media (prefers-reduced-motion: reduce) {
