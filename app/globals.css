@@ -138,7 +138,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   pointer-events: none;
 }
 .home-wordmark span { position: absolute; white-space: nowrap; }
-.home-carmel { top: 28.32svh; left: -9.11vw; font-size: min(44.6vw, 66.9svh); transform: rotate(-14.8deg) scaleX(.485); transform-origin: left top; }
+.home-carmel { top: 31.54svh; left: -9.11vw; font-size: min(44.6vw, 66.9svh); transform: rotate(-14.8deg) scaleX(.485); transform-origin: left top; }
 .home-faraggi { top: 70.21svh; left: 35.03vw; font-size: min(39vw, 58.5svh); transform: rotate(-6.2deg) scaleX(.545); transform-origin: left top; }
 .home-intro {
   position: absolute;
@@ -370,10 +370,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 @media (min-width: 768px) and (max-width: 1199px) and (max-height: 600px) and (orientation: landscape) {
-  .home-red-plane { clip-path: polygon(0 calc(75svh + 9.25vw), 35.03% 75%, 35.03% 100%, 0 100%); }
-  .home-carmel { top: 49svh; font-size: min(44.6vw, 47svh); }
-  .home-faraggi { top: 86svh; font-size: min(39vw, 45svh); }
-  .home-intro { top: 38%; width: min(290px, 25vw); font-size: 14px; line-height: 1.35; }
+  .home-red-plane { clip-path: polygon(0 calc(52.2svh + 98px + 9.25vw), 35.03% calc(52.2svh + 98px), 35.03% 100%, 0 100%); }
+  .home-carmel { top: calc(266.6px - 12.94svh); font-size: min(44.6vw, calc(116.9svh - 300px)); }
+  .home-faraggi { top: calc(30svh + 241px); font-size: min(39vw, calc(92.65svh - 205px)); }
+  .home-intro { top: calc(55.3svh - 75px); width: min(290px, 25vw); font-size: calc(8.84px + 1.2svh); line-height: 1.35; }
 }
 
 @media (max-width: 767px), (max-width: 1199px) and (orientation: portrait) {
