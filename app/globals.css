@@ -265,28 +265,31 @@ button, a { -webkit-tap-highlight-color: transparent; }
   position: absolute;
   inset: 0;
   background: var(--red);
-  clip-path: polygon(100% 6%, 100% 100%, 34% 100%);
+  clip-path: polygon(100% 6%, 100% 100%, 14% 100%);
 }
 .contact-content {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: 42% minmax(420px, 1fr);
+  grid-template-columns: 54.8% minmax(420px, 1fr);
   gap: clamp(60px, 9vw, 150px);
-  padding: clamp(250px, 29vh, 350px) var(--pad) 160px;
+  padding: clamp(240px, 27.7vh, 335px) var(--pad) 160px;
 }
-.contact-intro h1 { margin: 0 0 54px; font-size: clamp(31px, 2.75vw, 48px); font-weight: 400; line-height: 1.25; letter-spacing: -.03em; }
+.contact-intro { max-width: 440px; margin-left: 9px; }
+.contact-intro h1 { margin: 0 0 54px; font-size: clamp(31px, 2.4vw, 40px); font-weight: 400; line-height: 1.25; letter-spacing: -.03em; }
 .contact-intro a { display: inline-block; font-size: clamp(18px, 1.65vw, 27px); border-bottom: 1px solid; transition: color 180ms ease; }
 .contact-intro a:hover, .contact-intro a:focus-visible { color: var(--red); }
-.contact-form { position: relative; padding-top: 32px; }
-.field { position: relative; margin-bottom: 50px; border-bottom: 2px solid var(--black); }
+.contact-form { position: relative; padding-top: 65px; }
+.field { position: relative; margin-bottom: 41px; border-bottom: 2px solid var(--black); }
 .field:focus-within { border-color: var(--red); }
-.field label { display: block; margin-bottom: 12px; font-size: 14px; font-weight: 700; letter-spacing: .015em; }
-.field input, .field textarea, .field select { display: block; width: 100%; min-height: 44px; border: 0; outline: 0; border-radius: 0; background: transparent; color: var(--black); }
-.field textarea { min-height: 126px; resize: vertical; }
+.field label { display: block; margin-bottom: 4px; font-size: 14px; font-weight: 700; letter-spacing: .015em; }
+.field input, .field textarea, .field select { display: block; width: 100%; min-height: 9px; border: 0; outline: 0; border-radius: 0; background: transparent; color: var(--black); }
+.field textarea { min-height: 154px; resize: vertical; }
+.field select:required:invalid { color: transparent; }
+.field select option { color: var(--black); }
 .field select { appearance: none; cursor: pointer; padding-right: 46px; }
 .select-field::after { content: "⌄"; position: absolute; right: 8px; bottom: 12px; font-size: 30px; line-height: 1; pointer-events: none; }
-.message-field { margin-bottom: 56px; }
+.message-field { margin-bottom: 59px; }
 .honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 .send-button {
   display: flex;
@@ -308,7 +311,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .send-button .arrow { font-size: 44px; font-weight: 200; }
 .form-status { min-height: 24px; margin: 14px 0 0; font-size: 14px; font-weight: 600; }
 .form-status.error { color: #a3130e; }
-.contact-payoff { position: absolute; z-index: 1; left: -1vw; bottom: -3vh; margin: 0; font-size: min(29vw, 430px); white-space: nowrap; transform: scaleX(.6); transform-origin: left bottom; }
+.contact-payoff { position: absolute; z-index: 1; left: -1vw; top: 55.5%; margin: 0; font-size: min(35vw, 520px); white-space: nowrap; transform: scaleX(.57); transform-origin: left top; }
 .contact-location { color: var(--black); }
 
 .case-study { padding: 150px var(--pad) 60px; }
@@ -412,21 +415,25 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .molt-art i { margin-top: 7px; font-size: 3.2vw; }
   .work-contact-link { margin-top: 24px; padding: 20px 0 0; }
 
-  .contact-page { min-height: 1845px; }
+  .contact-page { min-height: 0; height: max(100svh, 923px); }
   .contact-red-plane { clip-path: polygon(100% 8%, 100% 100%, 67% 100%); }
-  .contact-content { display: block; padding: 215px 31% 550px var(--pad); }
-  .contact-intro h1 { margin-bottom: 46px; font-size: clamp(28px, 7.4vw, 42px); line-height: 1.28; }
+  .contact-content { display: block; padding: 106px 31% 0 28px; }
+  .contact-intro { margin-left: 0; }
+  .contact-intro h1 { margin-bottom: 24px; font-size: clamp(23px, 6vw, 28px); line-height: 1.28; }
   .contact-intro a { font-size: clamp(17px, 4.5vw, 22px); }
-  .contact-form { padding-top: 78px; }
-  .field { margin-bottom: 52px; border-bottom-width: 1.5px; }
-  .field label { margin-bottom: 6px; font-size: 13px; }
-  .field input, .field select { min-height: 42px; }
-  .field textarea { min-height: 170px; }
-  .message-field { margin-bottom: 50px; }
+  .contact-form { padding-top: 42px; }
+  .field { height: 60px; min-height: 60px; margin-bottom: 0; border-bottom: 0; }
+  .field::after { content: ""; position: absolute; top: 27px; left: 0; right: 0; border-bottom: 1.5px solid var(--black); }
+  .field:focus-within::after { border-color: var(--red); }
+  .field label { margin-bottom: 2px; font-size: 13px; }
+  .field input, .field select { min-height: 44px; }
+  .field textarea { min-height: 80px; height: 80px; }
+  .message-field { height: 116px; min-height: 116px; margin-bottom: 26px; }
+  .message-field::after { top: 115px; }
   .send-button { min-height: 58px; padding: 0 25px; font-size: 16px; }
   .send-button .arrow { font-size: 35px; }
-  .contact-payoff { left: -2vw; bottom: 2.5vh; font-size: 42vw; }
-  .contact-location { bottom: 35px; color: var(--black); }
+  .contact-payoff { left: -2vw; top: 79%; font-size: 55vw; transform: scaleX(.44); transform-origin: left top; }
+  .contact-location { right: 14px; bottom: 35px; color: var(--black); }
 
   .case-study { padding: 138px var(--pad) 34px; }
   .case-study-header { display: block; margin-bottom: 26px; }
@@ -449,9 +456,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .about-page { min-height: 0; height: max(100svh, 923px); }
   .about-content { padding-top: 112px; }
   .about-content .page-title { margin-bottom: 48px; }
-  .contact-page { min-height: 1730px; }
-  .contact-content { padding-top: 190px; padding-bottom: 500px; }
-  .contact-form { padding-top: 64px; }
+  .contact-page { min-height: 0; height: max(100svh, 923px); }
+  .contact-content { padding-top: 104px; padding-bottom: 0; }
+  .contact-form { padding-top: 40px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
