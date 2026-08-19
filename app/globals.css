@@ -123,12 +123,12 @@ button, a { -webkit-tap-highlight-color: transparent; }
   pointer-events: none;
 }
 .home-wordmark span { position: absolute; white-space: nowrap; }
-.home-carmel { top: 0; left: -2vw; font-size: clamp(300px, 40vw, 710px); }
-.home-faraggi { right: -1vw; bottom: 0; font-size: clamp(280px, 39vw, 680px); }
+.home-carmel { top: 0; left: -2vw; font-size: clamp(300px, 40vw, 710px); transform: scaleX(.545); transform-origin: left top; }
+.home-faraggi { right: -1vw; bottom: 0; font-size: clamp(280px, 39vw, 680px); transform: scaleX(.545); transform-origin: right bottom; }
 .home-intro {
   position: absolute;
   top: 43%;
-  right: clamp(110px, 12vw, 190px);
+  right: clamp(88px, 7vw, 112px);
   width: 290px;
   z-index: 3;
   font-size: clamp(16px, 1.12vw, 20px);
@@ -342,12 +342,12 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .mobile-only { display: block; }
 
   .home-page { min-height: max(100svh, 690px); }
-  .home-red-plane { inset: auto auto 0 0; width: 49%; height: 31%; clip-path: polygon(0 22%, 100% 0, 100% 100%, 0 100%); }
-  .home-wordmark { inset: 21vh auto auto -4vw; width: 108vw; height: 56vh; transform: rotate(-8deg); transform-origin: 50% 50%; line-height: .73; }
+  .home-red-plane { inset: auto auto 0 0; width: 49%; height: 28.5%; clip-path: polygon(0 28%, 100% 0, 100% 100%, 0 100%); }
+  .home-wordmark { inset: 12.2vh auto auto 1vw; width: 108vw; height: 69vh; transform: rotate(-8deg); transform-origin: 50% 50%; line-height: .82; }
   .home-wordmark span { position: relative; display: block; }
-  .home-carmel, .home-faraggi { inset: auto; right: auto; bottom: auto; font-size: clamp(150px, 41vw, 370px); }
-  .home-faraggi { margin-top: 3vw; margin-left: 3vw; }
-  .home-intro { top: auto; right: 6vw; bottom: 11.5vh; width: 41vw; font-size: clamp(16px, 4.4vw, 20px); line-height: 1.45; }
+  .home-carmel, .home-faraggi { inset: auto; right: auto; bottom: auto; font-size: clamp(270px, 80vw, 380px); transform: scaleX(.4); transform-origin: left top; }
+  .home-faraggi { margin-top: 1vw; margin-left: 4vw; }
+  .home-intro { top: auto; right: 5.5vw; bottom: 11.5vh; width: 35vw; font-size: clamp(14px, 3.8vw, 17px); line-height: 1.45; }
   .home-work-link { display: none; }
   .location-home { display: block; position: absolute; right: 6vw; bottom: 3.2vh; z-index: 3; margin: 0; font-size: 13px; font-weight: 700; }
 
