@@ -49,6 +49,10 @@ test("portfolio source includes the real routes, design tokens and enquiry API",
 });
 
 test("every inner page exposes an explicit route back home", async () => {
+  const navigationSource = await readFile(new URL("../components/navigation.tsx", import.meta.url), "utf8");
+  assert.match(navigationSource, /className="home-back-link"[^>]*href="\/"/);
+  assert.match(navigationSource, /mobileLinks\s*=\s*\[\{\s*href:\s*"\/",\s*label:\s*"HOME"/);
+
   for (const path of ["/work", "/about", "/contact", "/work/proof"]) {
     const response = await render(path);
     assert.equal(response.status, 200);
