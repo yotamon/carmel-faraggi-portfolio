@@ -19,8 +19,6 @@ export function Navigation() {
   const [open, setOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => setOpen(false), [pathname]);
-
   useEffect(() => {
     document.body.classList.toggle("menu-open", open);
     return () => document.body.classList.remove("menu-open");
@@ -79,6 +77,7 @@ export function Navigation() {
               href={link.href}
               tabIndex={open ? 0 : -1}
               className={isCurrent(pathname, link.href) ? "is-active" : ""}
+              onClick={() => setOpen(false)}
             >
               {link.label}
             </Link>
