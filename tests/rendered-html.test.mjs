@@ -60,3 +60,17 @@ test("every inner page exposes an explicit route back home", async () => {
     assert.match(html, /href="\/"[^>]*>[^<]*HOME/i, `missing home link on ${path}`);
   }
 });
+
+test("internal navigation uses resilient browser links", async () => {
+  const navigationSources = await Promise.all([
+    readFile(new URL("../components/navigation.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/project-card.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/work/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/work/[slug]/page.tsx", import.meta.url), "utf8"),
+  ]);
+
+  for (const source of navigationSources) {
+    assert.doesNotMatch(source, /from ["']next\/link["']/);
+  }
+});
