@@ -2,6 +2,7 @@ export type Project = {
   title: string;
   slug: string;
   category: string;
+  desktopCategory?: string;
   group: "commercial" | "music-culture";
   year: string;
   services: string[];
@@ -15,6 +16,7 @@ export const projects: Project[] = [
     title: "PROOF",
     slug: "proof",
     category: "BAKERY / CAFÉ",
+    desktopCategory: "FOOD + HOSPITALITY",
     group: "commercial",
     year: "2021",
     services: ["Brand identity", "Packaging", "Art direction"],
@@ -24,33 +26,10 @@ export const projects: Project[] = [
       "A bold, direct identity for a London sourdough bakery, built to feel warm, confident and instantly recognisable across packaging and the everyday café experience.",
   },
   {
-    title: "MOLT — NEW SKIN",
-    slug: "molt-new-skin",
-    category: "MUSIC + CULTURE",
-    group: "music-culture",
-    year: "2026",
-    services: ["Art direction", "Release artwork", "Campaign"],
-    layout: "right",
-    source: "type",
-    description:
-      "Release artwork and campaign direction shaped around transformation, tension and a deliberately stripped-back graphic language.",
-  },
-  {
-    title: "ANNA VALE",
-    slug: "anna-vale",
-    category: "BEAUTY / CLINIC",
-    group: "commercial",
-    year: "2025",
-    services: ["Brand identity", "Art direction", "Digital"],
-    layout: "left",
-    source: "work-a",
-    description:
-      "A restrained beauty identity balancing clinical precision with a soft, considered visual atmosphere.",
-  },
-  {
     title: "TAVLA",
     slug: "tavla",
     category: "HOSPITALITY / POP-UP",
+    desktopCategory: "FOOD + HOSPITALITY",
     group: "commercial",
     year: "2024",
     services: ["Brand identity", "Print", "Art direction"],
@@ -60,9 +39,23 @@ export const projects: Project[] = [
       "An expressive identity for a travelling Mediterranean pop-up, pairing a hand-made mark with tactile, richly lit applications.",
   },
   {
+    title: "ANNA VALE",
+    slug: "anna-vale",
+    category: "BEAUTY / CLINIC",
+    desktopCategory: "BEAUTY + WELLNESS",
+    group: "commercial",
+    year: "2025",
+    services: ["Brand identity", "Art direction", "Digital"],
+    layout: "left",
+    source: "work-a",
+    description:
+      "A restrained beauty identity balancing clinical precision with a soft, considered visual atmosphere.",
+  },
+  {
     title: "SOPHIA GREEN",
     slug: "sophia-green",
     category: "WELLNESS / PILATES",
+    desktopCategory: "WELLNESS",
     group: "commercial",
     year: "2025",
     services: ["Brand identity", "Print", "Social"],
@@ -106,6 +99,18 @@ export const projects: Project[] = [
     source: "work-b",
     description:
       "A warm, crafted identity for an Italian kitchen, drawing on natural materials and a relaxed sense of occasion.",
+  },
+  {
+    title: "MOLT — NEW SKIN",
+    slug: "molt-new-skin",
+    category: "MUSIC + CULTURE",
+    group: "music-culture",
+    year: "2026",
+    services: ["Art direction", "Release artwork", "Campaign"],
+    layout: "right",
+    source: "type",
+    description:
+      "Release artwork and campaign direction shaped around transformation, tension and a deliberately stripped-back graphic language.",
   },
 ];
 
