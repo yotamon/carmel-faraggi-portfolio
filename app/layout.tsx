@@ -26,6 +26,39 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const revealBootstrap = `(function () {
+  var root = document.documentElement;
+  if (!("IntersectionObserver" in window)) return;
+  root.classList.add("js");
+  var io = new IntersectionObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) {
+        entries[i].target.classList.add("is-visible");
+        io.unobserve(entries[i].target);
+      }
+    }
+  }, { rootMargin: "0px 0px -6% 0px", threshold: 0.08 });
+  var tracked = new WeakSet();
+  var scan = function () {
+    var nodes = document.querySelectorAll("[data-reveal]");
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      if (tracked.has(el) || el.classList.contains("is-visible")) continue;
+      tracked.add(el);
+      io.observe(el);
+    }
+  };
+  scan();
+  new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
+})();`;
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body>{children}</body></html>;
+  return (
+    <html lang="en">
+      <body>
+        <script dangerouslySetInnerHTML={{ __html: revealBootstrap }} />
+        {children}
+      </body>
+    </html>
+  );
 }

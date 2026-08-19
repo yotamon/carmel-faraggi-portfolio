@@ -48,22 +48,22 @@ export function ContactForm() {
 
   return (
     <form className="contact-form" onSubmit={submit}>
-      <div className="field">
+      <div className="field" data-reveal>
         <label htmlFor="name">NAME</label>
         <input id="name" name="name" autoComplete="name" required minLength={2} />
       </div>
-      <div className="field">
+      <div className="field" data-reveal style={{ "--item": 1 } as React.CSSProperties}>
         <label htmlFor="email">EMAIL</label>
         <input id="email" name="email" type="email" autoComplete="email" required />
       </div>
-      <div className="field select-field">
+      <div className="field select-field" data-reveal style={{ "--item": 2 } as React.CSSProperties}>
         <label htmlFor="interest">WHAT ARE YOU LOOKING FOR?</label>
         <select id="interest" name="interest" defaultValue="" required>
           <option value="" disabled>Select a service</option>
           {options.map((option) => <option key={option}>{option}</option>)}
         </select>
       </div>
-      <div className="field message-field">
+      <div className="field message-field" data-reveal style={{ "--item": 3 } as React.CSSProperties}>
         <label htmlFor="project">TELL ME ABOUT THE PROJECT</label>
         <textarea id="project" name="project" required minLength={12} rows={5} />
       </div>
@@ -71,7 +71,7 @@ export function ContactForm() {
         <label htmlFor="company">Company website</label>
         <input id="company" name="company" tabIndex={-1} autoComplete="off" />
       </div>
-      <button className="send-button" type="submit" disabled={state === "sending"}>
+      <button className="send-button" type="submit" disabled={state === "sending"} data-reveal style={{ "--item": 4 } as React.CSSProperties}>
         <span>{state === "sending" ? "SENDING…" : "SEND"}</span>
         <span className="arrow" aria-hidden="true">→</span>
       </button>

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Navigation } from "@/components/navigation";
 import { ProjectCard } from "@/components/project-card";
 import { projects } from "@/lib/projects";
@@ -14,11 +13,11 @@ export default function WorkPage() {
     <main className="work-page inner-page">
       <Navigation />
       <section className="work-feed">
-        <h1 className="display page-title work-heading">WORK</h1>
+        <h1 className="display page-title work-heading" data-reveal="left">WORK</h1>
         <div className="projects-grid">
           {projects.map((project, index) => <ProjectCard project={project} index={index} key={project.slug} />)}
         </div>
-        <Link className="work-contact-link" href="/contact"><span>CONTACT</span><span aria-hidden="true">→</span></Link>
+        <a className="work-contact-link" href="/contact" data-reveal><span>CONTACT</span><span aria-hidden="true">→</span></a>
       </section>
     </main>
   );

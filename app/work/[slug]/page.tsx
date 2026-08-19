@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Navigation } from "@/components/navigation";
 import { ProjectArtwork } from "@/components/project-artwork";
@@ -29,7 +28,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
     <main className="project-page inner-page">
       <Navigation />
       <article className="case-study">
-        <header className="case-study-header">
+        <header className="case-study-header" data-reveal>
           <p className="eyebrow">{project.category}</p>
           <h1 className="display">{project.title}</h1>
           <div className="case-meta">
@@ -37,20 +36,22 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             <p>{project.services.join(" / ")}</p>
           </div>
         </header>
-        <ProjectArtwork project={project} hero />
-        <section className="case-copy">
+        <div data-reveal="fade">
+          <ProjectArtwork project={project} hero />
+        </div>
+        <section className="case-copy" data-reveal>
           <h2>THE PROJECT</h2>
           <p>{project.description}</p>
         </section>
-        <div className="case-study-frame frame-detail" aria-hidden="true">
+        <div className="case-study-frame frame-detail" aria-hidden="true" data-reveal="fade">
           <span>{project.title}</span>
         </div>
-        <div className="case-study-frame frame-system">
+        <div className="case-study-frame frame-system" aria-hidden="true" data-reveal>
           <p>IDENTITY</p><p>IMAGE</p><p>ATMOSPHERE</p>
         </div>
-        <footer className="case-study-footer">
-          <Link href={`/work/${next.slug}`}>NEXT PROJECT <span aria-hidden="true">→</span><strong>{next.title}</strong></Link>
-          <Link href="/contact">HAVE A PROJECT IN MIND? <span aria-hidden="true">→</span></Link>
+        <footer className="case-study-footer" data-reveal>
+          <a href={`/work/${next.slug}`}>NEXT PROJECT <span aria-hidden="true">→</span><strong>{next.title}</strong></a>
+          <a href="/contact">HAVE A PROJECT IN MIND? <span aria-hidden="true">→</span></a>
         </footer>
       </article>
     </main>

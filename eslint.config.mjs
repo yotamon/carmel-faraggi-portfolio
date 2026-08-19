@@ -23,6 +23,15 @@ const eslintConfig = defineConfig([
   jsxA11y.flatConfigs.recommended,
   next.configs["core-web-vitals"],
   {
+    rules: {
+      // Internal navigation intentionally uses plain <a> tags: the vinext
+      // 1.0.0-beta.2 client router silently fails to navigate in production
+      // builds (its Link chunk throws during RSC prefetch setup), so
+      // next/link clicks strand visitors on the current page.
+      "@next/next/no-html-link-for-pages": "off",
+    },
+  },
+  {
     languageOptions: {
       globals: {
         ...globals.browser,

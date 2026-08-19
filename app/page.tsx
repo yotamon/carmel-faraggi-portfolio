@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Navigation } from "@/components/navigation";
 
 export default function Home() {
@@ -16,9 +15,9 @@ export default function Home() {
         <p><strong>Independent<br className="mobile-only" /> design studio</strong></p>
         <p>Brand identity /<br /> Graphic design /<br />Art direction</p>
       </div>
-      <Link className="home-work-link" href="/work" aria-label="View Carmel Faraggi’s work">
+      <a className="home-work-link" href="/work" aria-label="View Carmel Faraggi’s work">
         <span>VIEW WORK</span><span aria-hidden="true">→</span>
-      </Link>
+      </a>
       <p className="location location-home">LONDON, UK</p>
     </main>
   );
