@@ -41,18 +41,20 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .site-header > * { pointer-events: auto; }
 .desktop-nav { display: flex; gap: clamp(40px, 5vw, 80px); }
-.desktop-nav a, .location, .work-contact-link, .eyebrow {
+.desktop-nav a, .location, .home-back-link, .work-contact-link, .eyebrow {
   font-size: 14px;
   font-weight: 700;
   letter-spacing: .035em;
   line-height: 1;
 }
-.desktop-nav a, .location-top { transition: color 180ms ease; }
-.desktop-nav a:hover, .desktop-nav a:focus-visible, .desktop-nav a.is-active, .location-top:hover, .location-top:focus-visible { color: var(--red); }
-.desktop-nav a:focus-visible, .location-top:focus-visible { outline: 2px solid var(--red); outline-offset: 7px; }
+.desktop-nav a, .location-top, .home-back-link { transition: color 180ms ease; }
+.desktop-nav a:hover, .desktop-nav a:focus-visible, .desktop-nav a.is-active, .location-top:hover, .location-top:focus-visible, .home-back-link:hover, .home-back-link:focus-visible { color: var(--red); }
+.desktop-nav a:focus-visible, .location-top:focus-visible, .home-back-link:focus-visible { outline: 2px solid var(--red); outline-offset: 7px; }
 .desktop-nav a[href="/work"].is-active { position: relative; }
 .desktop-nav a[href="/work"].is-active::after { content: ""; position: absolute; left: 0; right: 0; bottom: -22px; height: 1px; background: var(--red); }
-.location-top { margin-left: auto; }
+.header-meta { display: flex; align-items: center; gap: 24px; margin-left: auto; }
+.home-back-link { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.home-back-link span { font-size: 17px; line-height: .7; }
 
 .menu-toggle {
   display: none;
@@ -365,7 +367,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 1199px) {
   :root { --pad: clamp(20px, 6vw, 24px); }
   .site-header { min-height: 118px; padding: 0 var(--pad); justify-content: flex-end; }
-  .desktop-nav, .location-top { display: none; }
+  .desktop-nav, .header-meta { display: none; }
   .menu-toggle { display: block; width: 42px; margin-top: -48px; margin-right: -11px; padding: 12px 0; }
   .menu-toggle span { width: 28px; height: 2px; margin: 8px 0 8px auto; }
   .mobile-menu { display: block; }

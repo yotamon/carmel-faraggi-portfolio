@@ -47,3 +47,12 @@ test("portfolio source includes the real routes, design tokens and enquiry API",
   assert.match(contactRoute, /submission_key/);
   await assert.rejects(access(new URL("../app/_sites-preview/SkeletonPreview.tsx", templateRoot)));
 });
+
+test("every inner page exposes an explicit route back home", async () => {
+  for (const path of ["/work", "/about", "/contact", "/work/proof"]) {
+    const response = await render(path);
+    assert.equal(response.status, 200);
+    const html = await response.text();
+    assert.match(html, /href="\/"[^>]*>[^<]*HOME/i, `missing home link on ${path}`);
+  }
+});

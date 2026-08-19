@@ -10,7 +10,10 @@ const links = [
   { href: "/contact", label: "CONTACT" },
 ];
 
+const mobileLinks = [{ href: "/", label: "HOME" }, ...links];
+
 function isCurrent(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
   return href === "/work" ? pathname.startsWith("/work") : pathname === href;
 }
 
@@ -49,9 +52,16 @@ export function Navigation() {
             </Link>
           ))}
         </nav>
-        <Link className="location location-top" href="/" aria-label="Carmel Faraggi home">
-          LONDON, UK
-        </Link>
+        <div className="header-meta">
+          {pathname !== "/" ? (
+            <Link className="home-back-link" href="/" aria-label="Back to Carmel Faraggi home">
+              <span aria-hidden="true">←</span> HOME
+            </Link>
+          ) : null}
+          <Link className="location location-top" href="/" aria-label="Carmel Faraggi home">
+            LONDON, UK
+          </Link>
+        </div>
         <button
           ref={menuButtonRef}
           className={`menu-toggle ${open ? "is-open" : ""}`}
@@ -71,7 +81,7 @@ export function Navigation() {
 
       <div id="mobile-menu" className={`mobile-menu ${open ? "is-open" : ""}`} role="dialog" aria-modal="true" aria-hidden={!open}>
         <nav aria-label="Mobile navigation">
-          {links.map((link) => (
+          {mobileLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
