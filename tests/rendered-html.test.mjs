@@ -107,3 +107,27 @@ test("About and Contact preserve the approved copy and form schema", async () =>
   }
   assert.doesNotMatch(contactFormSource, /name="interest"[^>]*required/);
 });
+
+test("the corrected site retains the full motion system with an accessible fallback", async () => {
+  const [css, layoutSource, workResponse, aboutResponse, contactResponse, projectResponse] = await Promise.all([
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    render("/work"),
+    render("/about"),
+    render("/contact"),
+    render("/work/proof"),
+  ]);
+  const renderedPages = await Promise.all(
+    [workResponse, aboutResponse, contactResponse, projectResponse].map((response) => response.text()),
+  );
+
+  assert.match(layoutSource, /IntersectionObserver/);
+  assert.match(layoutSource, /MutationObserver/);
+  assert.match(css, /@keyframes\s+word-left/);
+  assert.match(css, /@keyframes\s+sweep-right/);
+  assert.match(css, /html\.js \[data-reveal\]\.is-visible/);
+  assert.match(css, /\.mobile-menu\.is-open nav a[\s\S]*transition-delay/);
+  assert.match(css, /\.project-card a:hover \.artwork-image/);
+  assert.match(css, /prefers-reduced-motion[\s\S]*html\.js \[data-reveal\]/);
+  for (const html of renderedPages) assert.match(html, /data-reveal/);
+});

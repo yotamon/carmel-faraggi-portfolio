@@ -16,12 +16,12 @@ export default function ContactPage() {
         <div className="contact-red-plane" aria-hidden="true" />
         <section className="contact-content">
           <div className="contact-intro">
-            <h1>Have a project in mind?<br />Tell me a little about it.</h1>
+            <h1 data-reveal>Have a project in mind?<br />Tell me a little about it.</h1>
             <TrackedEmailLink />
           </div>
           <ContactForm />
         </section>
-        <p className="display contact-payoff" aria-hidden="true">CONTACT</p>
+        <p className="display contact-payoff" aria-hidden="true" data-reveal="fade">CONTACT</p>
         <p className="location location-page contact-location">LONDON, UK</p>
       </main>
     </>

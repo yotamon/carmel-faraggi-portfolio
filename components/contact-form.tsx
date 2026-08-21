@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState, type CSSProperties } from "react";
 
 const options = [
   "Brand Identity",
@@ -80,24 +80,24 @@ export function ContactForm() {
 
   return (
     <form className="contact-form" onSubmit={submit} onFocusCapture={markStarted} noValidate>
-      <div className={`field ${errors.name ? "has-error" : ""}`}>
+      <div className={`field ${errors.name ? "has-error" : ""}`} data-reveal>
         <label htmlFor="name">NAME</label>
         <input id="name" name="name" autoComplete="name" required minLength={2} maxLength={120} aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? "name-error" : undefined} />
         {errors.name ? <p className="field-error" id="name-error">{errors.name}</p> : null}
       </div>
-      <div className={`field ${errors.email ? "has-error" : ""}`}>
+      <div className={`field ${errors.email ? "has-error" : ""}`} data-reveal style={{ "--item": 1 } as CSSProperties}>
         <label htmlFor="email">EMAIL</label>
         <input id="email" name="email" type="email" inputMode="email" autoComplete="email" required maxLength={254} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "email-error" : undefined} />
         {errors.email ? <p className="field-error" id="email-error">{errors.email}</p> : null}
       </div>
-      <div className="field select-field">
+      <div className="field select-field" data-reveal style={{ "--item": 2 } as CSSProperties}>
         <label htmlFor="interest">WHAT ARE YOU LOOKING FOR?</label>
         <select id="interest" name="interest" defaultValue="" aria-label="What are you looking for? (optional)">
           <option value="" />
           {options.map((option) => <option key={option}>{option}</option>)}
         </select>
       </div>
-      <div className={`field message-field ${errors.project ? "has-error" : ""}`}>
+      <div className={`field message-field ${errors.project ? "has-error" : ""}`} data-reveal style={{ "--item": 3 } as CSSProperties}>
         <label htmlFor="project">TELL ME ABOUT THE PROJECT</label>
         <textarea
           id="project"
@@ -119,7 +119,7 @@ export function ContactForm() {
         <label htmlFor="company">Company website</label>
         <input id="company" name="company" tabIndex={-1} autoComplete="off" />
       </div>
-      <button className="send-button" type="submit" disabled={state === "sending"}>
+      <button className="send-button" type="submit" disabled={state === "sending"} data-reveal style={{ "--item": 4 } as CSSProperties}>
         <span>{state === "sending" ? "SENDING…" : state === "success" ? "SENT ✓" : "SEND"}</span>
         {state !== "success" ? <span className="arrow" aria-hidden="true">→</span> : null}
       </button>

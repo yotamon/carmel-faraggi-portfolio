@@ -3,7 +3,11 @@ import { ProjectArtwork } from "./project-artwork";
 
 export function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
-    <article className={`project-card project-${project.slug} layout-${project.layout}`}>
+    <article
+      className={`project-card project-${project.slug} layout-${project.layout}`}
+      data-reveal
+      style={{ "--item": index } as React.CSSProperties}
+    >
       <a href={`/work/${project.slug}`} aria-label={`View ${project.title} project`}>
         <ProjectArtwork project={project} priority={index === 0} />
         <div className="project-card-info">

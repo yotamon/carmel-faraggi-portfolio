@@ -31,7 +31,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
       <Navigation />
       <main id="main-content" className="project-page inner-page" tabIndex={-1}>
         <article className="case-study">
-        <header className="case-study-header">
+        <header className="case-study-header" data-reveal>
           <p className="eyebrow">{project.category}</p>
           <h1 className="display">{project.title}</h1>
           <div className="case-meta">
@@ -39,15 +39,15 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             <p>{project.services.join(" / ")}</p>
           </div>
         </header>
-        <div>
+        <div data-reveal="fade">
           <ProjectArtwork project={project} hero priority />
         </div>
-        <section className="case-copy">
+        <section className="case-copy" data-reveal>
           <h2>THE PROJECT</h2>
           <p>{project.description}</p>
         </section>
         <div className="case-study-gallery">
-          {project.gallery.map((image) => (
+          {project.gallery.map((image, index) => (
             <img
               key={image.src}
               src={image.src}
@@ -58,10 +58,12 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
               sizes="(max-width: 820px) calc(100vw - 36px), calc(100vw - 96px)"
               loading="lazy"
               decoding="async"
+              data-reveal="fade"
+              style={{ "--item": index } as React.CSSProperties}
             />
           ))}
         </div>
-        <footer className="case-study-footer">
+        <footer className="case-study-footer" data-reveal>
           <a href={`/work/${next.slug}`}>NEXT PROJECT <span aria-hidden="true">→</span><strong>{next.title}</strong></a>
           <a href="/contact">HAVE A PROJECT IN MIND? <span aria-hidden="true">→</span></a>
         </footer>
