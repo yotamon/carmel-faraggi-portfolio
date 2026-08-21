@@ -29,6 +29,21 @@ test("server-renders the Carmel Faraggi portfolio home", async () => {
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|react-loading-skeleton/i);
 });
 
+test("mobile home keeps the mockup-accurate stepped wordmark", async () => {
+  const [pageSource, css] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(pageSource, /home-mobile-carmel/);
+  assert.match(pageSource, /home-mobile-faraggi/);
+  assert.match(css, /\.home-mobile-line > span[^}]*scaleX\(var\(--word-scale/);
+  assert.match(css, /\.home-mobile-carmel > span:nth-child\(6\)/);
+  assert.match(css, /\.home-mobile-faraggi > span:nth-child\(7\)/);
+  assert.match(css, /\.home-mobile-carmel[^}]*animation:\s*word-left/);
+  assert.match(css, /\.home-mobile-faraggi[^}]*animation:\s*word-right/);
+});
+
 test("portfolio source includes the real routes, design tokens and enquiry API", async () => {
   const [css, packageJson, hosting, contactRoute] = await Promise.all([
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),

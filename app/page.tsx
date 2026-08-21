@@ -10,6 +10,12 @@ export default function Home() {
           <h1 className="home-wordmark" aria-label="Carmel Faraggi">
             <span className="home-carmel">CARMEL</span>
             <span className="home-faraggi">FARAGGI</span>
+            <span className="home-mobile-line home-mobile-carmel" aria-hidden="true">
+              {"CARMEL".split("").map((letter, index) => <span key={`${letter}-${index}`}>{letter}</span>)}
+            </span>
+            <span className="home-mobile-line home-mobile-faraggi" aria-hidden="true">
+              {"FARAGGI".split("").map((letter, index) => <span key={`${letter}-${index}`}>{letter}</span>)}
+            </span>
           </h1>
         </div>
         <div className="home-intro">
