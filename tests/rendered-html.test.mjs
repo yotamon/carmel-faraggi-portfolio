@@ -74,3 +74,36 @@ test("internal navigation uses resilient browser links", async () => {
     assert.doesNotMatch(source, /from ["']next\/link["']/);
   }
 });
+
+test("review-locked portfolio labels and placeholder removals are rendered", async () => {
+  const response = await render("/work");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+
+  for (const category of ["FOOD + HOSPITALITY", "BEAUTY + WELLNESS", "MUSIC + CULTURE"]) {
+    assert.match(html, new RegExp(category.replaceAll("+", "\\+")));
+  }
+  assert.doesNotMatch(html, /NORTH BOUND|STUDIO AURORA|MAREA/);
+  assert.ok(html.indexOf("MOLT") < html.indexOf("TAVLA"), "Music + Culture should appear within the first two projects");
+});
+
+test("About and Contact preserve the approved copy and form schema", async () => {
+  const [aboutResponse, contactResponse, contactFormSource] = await Promise.all([
+    render("/about"),
+    render("/contact"),
+    readFile(new URL("../components/contact-form.tsx", import.meta.url), "utf8"),
+  ]);
+  const about = await aboutResponse.text();
+  const contact = await contactResponse.text();
+
+  assert.match(about, /I came to design through art, music and fashion/);
+  assert.match(about, /I tend to think about the whole picture/);
+  assert.match(about, /Art direction is a big part of how I work/);
+  assert.match(about, /That might mean a full identity/);
+  assert.match(contact, /Have a project in mind/);
+  assert.match(contact, /carmelfaraggi@gmail.com/);
+  for (const option of ["Brand Identity", "Graphic Design / One-off Project", "Music / Artist Visuals", "Not Sure Yet"]) {
+    assert.match(contactFormSource, new RegExp(option));
+  }
+  assert.doesNotMatch(contactFormSource, /name="interest"[^>]*required/);
+});

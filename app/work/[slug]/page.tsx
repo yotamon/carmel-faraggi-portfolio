@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Navigation } from "@/components/navigation";
 import { ProjectArtwork } from "@/components/project-artwork";
-import { getNextProject, getProject, projects } from "@/lib/projects";
+import { getNextProject, getProject, projects, responsiveSrcSet } from "@/lib/projects";
+
+/* eslint-disable @next/next/no-img-element -- vinext has no image optimizer; these images provide explicit responsive srcsets. */
 
 export function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
@@ -25,10 +27,11 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const next = getNextProject(project.slug);
 
   return (
-    <main className="project-page inner-page">
+    <>
       <Navigation />
-      <article className="case-study">
-        <header className="case-study-header" data-reveal>
+      <main id="main-content" className="project-page inner-page" tabIndex={-1}>
+        <article className="case-study">
+        <header className="case-study-header">
           <p className="eyebrow">{project.category}</p>
           <h1 className="display">{project.title}</h1>
           <div className="case-meta">
@@ -36,24 +39,34 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             <p>{project.services.join(" / ")}</p>
           </div>
         </header>
-        <div data-reveal="fade">
-          <ProjectArtwork project={project} hero />
+        <div>
+          <ProjectArtwork project={project} hero priority />
         </div>
-        <section className="case-copy" data-reveal>
+        <section className="case-copy">
           <h2>THE PROJECT</h2>
           <p>{project.description}</p>
         </section>
-        <div className="case-study-frame frame-detail" aria-hidden="true" data-reveal="fade">
-          <span>{project.title}</span>
+        <div className="case-study-gallery">
+          {project.gallery.map((image) => (
+            <img
+              key={image.src}
+              src={image.src}
+              alt={image.alt}
+              width={image.width ?? 1536}
+              height={image.height ?? 1024}
+              srcSet={responsiveSrcSet(image.src, image.width ?? 1536)}
+              sizes="(max-width: 820px) calc(100vw - 36px), calc(100vw - 96px)"
+              loading="lazy"
+              decoding="async"
+            />
+          ))}
         </div>
-        <div className="case-study-frame frame-system" aria-hidden="true" data-reveal>
-          <p>IDENTITY</p><p>IMAGE</p><p>ATMOSPHERE</p>
-        </div>
-        <footer className="case-study-footer" data-reveal>
+        <footer className="case-study-footer">
           <a href={`/work/${next.slug}`}>NEXT PROJECT <span aria-hidden="true">→</span><strong>{next.title}</strong></a>
           <a href="/contact">HAVE A PROJECT IN MIND? <span aria-hidden="true">→</span></a>
         </footer>
-      </article>
-    </main>
+        </article>
+      </main>
+    </>
   );
 }

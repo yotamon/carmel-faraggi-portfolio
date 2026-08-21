@@ -20,6 +20,7 @@ export function Navigation() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     document.body.classList.toggle("menu-open", open);
@@ -28,17 +29,57 @@ export function Navigation() {
 
   useEffect(() => {
     if (!open) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setOpen(false);
-      requestAnimationFrame(() => menuButtonRef.current?.focus());
+    const menu = menuRef.current;
+    const header = menu?.previousElementSibling;
+    const pageRoot = menu?.parentElement;
+    const backgroundElements = Array.from(pageRoot?.children ?? []).filter(
+      (element): element is HTMLElement => element instanceof HTMLElement && element !== menu && element !== header,
+    );
+    const backgroundState = backgroundElements.map((element) => ({
+      element,
+      inert: element.inert,
+      ariaHidden: element.getAttribute("aria-hidden"),
+    }));
+    for (const element of backgroundElements) {
+      element.inert = true;
+      element.setAttribute("aria-hidden", "true");
+    }
+    const menuLinks = Array.from(menu?.querySelectorAll<HTMLElement>("a[href]") ?? []);
+    const focusable = [menuButtonRef.current, ...menuLinks].filter((element): element is HTMLElement => Boolean(element));
+    const focusTimer = window.setTimeout(() => menuLinks[0]?.focus(), 190);
+
+    const manageKeyboard = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        requestAnimationFrame(() => menuButtonRef.current?.focus());
+        return;
+      }
+      if (event.key !== "Tab" || focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
-    document.addEventListener("keydown", closeOnEscape);
-    return () => document.removeEventListener("keydown", closeOnEscape);
+    document.addEventListener("keydown", manageKeyboard);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener("keydown", manageKeyboard);
+      for (const state of backgroundState) {
+        state.element.inert = state.inert;
+        if (state.ariaHidden === null) state.element.removeAttribute("aria-hidden");
+        else state.element.setAttribute("aria-hidden", state.ariaHidden);
+      }
+    };
   }, [open]);
 
   return (
     <>
+      <a className="skip-link" href="#main-content">SKIP TO CONTENT</a>
       <header className="site-header">
         <nav className="desktop-nav" aria-label="Primary navigation">
           {links.map((link) => (
@@ -78,7 +119,15 @@ export function Navigation() {
         </button>
       </header>
 
-      <div id="mobile-menu" className={`mobile-menu ${open ? "is-open" : ""}`} role="dialog" aria-modal="true" aria-hidden={!open}>
+      <div
+        ref={menuRef}
+        id="mobile-menu"
+        className={`mobile-menu ${open ? "is-open" : ""}`}
+        role="dialog"
+        aria-label="Site navigation"
+        aria-modal="true"
+        aria-hidden={!open}
+      >
         <nav aria-label="Mobile navigation">
           {mobileLinks.map((link, index) => (
             <a
