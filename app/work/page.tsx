@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Navigation } from "@/components/navigation";
 import { ProjectCard } from "@/components/project-card";
-import { projects } from "@/lib/projects";
+import { workProjects } from "@/lib/projects";
 
 export const metadata: Metadata = {
   title: "Work — Carmel Faraggi Art & Design",
-  description: "Selected brand identity, graphic design, art direction and music projects by Carmel Faraggi.",
+  description: "Selected brand identity, graphic design and art direction projects by Carmel Faraggi.",
 };
 
 export default function WorkPage() {
@@ -16,9 +16,12 @@ export default function WorkPage() {
         <section className="work-feed">
           <h1 className="display page-title work-heading" data-reveal="left">WORK</h1>
           <div className="projects-grid">
-            {projects.map((project, index) => <ProjectCard project={project} index={index} key={project.slug} />)}
+            {workProjects.map((project, index) => <ProjectCard project={project} index={index} key={project.slug} />)}
           </div>
-          <a className="work-contact-link" href="/contact" data-reveal><span>CONTACT</span><span aria-hidden="true">→</span></a>
+          <div className="work-ending-links">
+            <a className="work-contact-link work-artists-link" href="/for-artists" data-reveal><span>FOR ARTISTS</span><span aria-hidden="true">→</span></a>
+            <a className="work-contact-link" href="/contact" data-reveal><span>CONTACT</span><span aria-hidden="true">→</span></a>
+          </div>
         </section>
       </main>
     </>

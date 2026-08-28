@@ -29,19 +29,25 @@ test("server-renders the Carmel Faraggi portfolio home", async () => {
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|react-loading-skeleton/i);
 });
 
-test("mobile home keeps the mockup-accurate stepped wordmark", async () => {
+test("home uses the approved wordmark artwork with accessible heading text", async () => {
   const [pageSource, css] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
   ]);
 
-  assert.match(pageSource, /home-mobile-carmel/);
-  assert.match(pageSource, /home-mobile-faraggi/);
-  assert.match(css, /\.home-mobile-line > span[^}]*scaleX\(var\(--word-scale/);
-  assert.match(css, /\.home-mobile-carmel > span:nth-child\(6\)/);
-  assert.match(css, /\.home-mobile-faraggi > span:nth-child\(7\)/);
-  assert.match(css, /\.home-mobile-carmel[^}]*animation:\s*word-left/);
-  assert.match(css, /\.home-mobile-faraggi[^}]*animation:\s*word-right/);
+  assert.match(pageSource, /wordmarks\/carmel-mobile\.png/);
+  assert.match(pageSource, /wordmarks\/carmel-desktop\.png/);
+  assert.match(pageSource, /wordmarks\/faraggi\.png/);
+  assert.match(pageSource, /wordmarks\/faraggi-desktop\.png/);
+  assert.match(pageSource, /visually-hidden">Carmel Faraggi/);
+  assert.match(css, /\.home-carmel\s*\{[^}]*top:/);
+  assert.match(css, /\.home-faraggi\s*\{[^}]*top:/);
+  assert.match(css, /--red-hinge-x:/);
+  assert.match(css, /--faraggi-art-top:\s*calc\(var\(--red-hinge-y\)/);
+  assert.match(css, /clip-path:\s*polygon\([^}]*var\(--red-hinge-x\)/);
+  assert.match(css, /\.display\s*\{[^}]*letter-spacing:\s*\.01em;[^}]*line-height:\s*\.92;/);
+  assert.match(css, /\.artists-title\s*\{[^}]*line-height:\s*\.98;[^}]*letter-spacing:\s*\.015em;/);
+  assert.doesNotMatch(pageSource, /home-mobile-line/);
 });
 
 test("portfolio source includes the real routes, design tokens and enquiry API", async () => {
@@ -68,7 +74,7 @@ test("every inner page exposes an explicit route back home", async () => {
   assert.match(navigationSource, /className="home-back-link"[^>]*href="\/"/);
   assert.match(navigationSource, /mobileLinks\s*=\s*\[\{\s*href:\s*"\/",\s*label:\s*"HOME"/);
 
-  for (const path of ["/work", "/about", "/contact", "/work/proof"]) {
+  for (const path of ["/work", "/for-artists", "/about", "/contact", "/work/proof", "/work/vivi"]) {
     const response = await render(path);
     assert.equal(response.status, 200);
     const html = await response.text();
@@ -95,21 +101,53 @@ test("review-locked portfolio labels and placeholder removals are rendered", asy
   assert.equal(response.status, 200);
   const html = await response.text();
 
-  for (const category of ["FOOD + HOSPITALITY", "BEAUTY + WELLNESS", "MUSIC + CULTURE"]) {
+  for (const category of ["FOOD + HOSPITALITY", "BEAUTY + WELLNESS"]) {
     assert.match(html, new RegExp(category.replaceAll("+", "\\+")));
   }
   assert.doesNotMatch(html, /NORTH BOUND|STUDIO AURORA|MAREA/);
-  assert.ok(html.indexOf("MOLT") < html.indexOf("TAVLA"), "Music + Culture should appear within the first two projects");
+  assert.doesNotMatch(html, /MOLT|VIVI|ELI MOSS/);
+  for (const title of ["PROOF", "ANNA VALE", "TAVLA", "SOPHIA GREEN"]) assert.match(html, new RegExp(title));
+  assert.ok(html.indexOf("PROOF") < html.indexOf("ANNA VALE"));
+  assert.ok(html.indexOf("ANNA VALE") < html.indexOf("TAVLA"));
+  assert.ok(html.indexOf("TAVLA") < html.indexOf("SOPHIA GREEN"));
+  assert.match(html, /href="\/for-artists"/);
+});
+
+test("For Artists renders the locked copy, project order and real cover rail", async () => {
+  const [response, css] = await Promise.all([
+    render("/for-artists"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  assert.equal(response.status, 200);
+  const html = await response.text();
+
+  assert.match(html, /Cover Art &amp; Artist Branding — Carmel Faraggi Art &amp; Design/);
+  assert.match(html, /Cover art, artist identities and release visuals by Carmel Faraggi — graphic design and art direction for musicians and artists\./);
+
+  for (const copy of [
+    "VISUAL", "WORLDS", "FOR ARTISTS", "START A PROJECT", "FEATURED PROJECTS",
+    "SELECTED COVERS", "ARTIST IDENTITY", "COVER ART", "RELEASE VISUALS",
+    "SOCIAL CONTENT", "PRINT &amp; MERCH", "HAVE A RELEASE IN MIND?", "TELL ME ABOUT IT",
+  ]) assert.ok(html.includes(copy), `missing locked For Artists copy: ${copy}`);
+  assert.ok(html.indexOf("MOLT — NEW SKIN") < html.indexOf("VIVI"));
+  assert.ok(html.indexOf("VIVI") < html.indexOf("ELI MOSS"));
+  assert.match(html, /href="\/contact\?type=music"/);
+  assert.match(html, /aria-label="Selected cover artwork"/);
+  assert.match(css, /\.mobile-menu nav a\s*\{[^}]*white-space:\s*nowrap;/);
+  assert.match(css, /\.artists-hero-copy\s*\{[^}]*width:\s*min\(52vw, 320px\);[^}]*margin:\s*50px 0 0;/);
+  assert.doesNotMatch(html, /placeholder|coming soon/i);
 });
 
 test("About and Contact preserve the approved copy and form schema", async () => {
-  const [aboutResponse, contactResponse, contactFormSource] = await Promise.all([
+  const [aboutResponse, contactResponse, musicContactResponse, contactFormSource] = await Promise.all([
     render("/about"),
     render("/contact"),
+    render("/contact?type=music"),
     readFile(new URL("../components/contact-form.tsx", import.meta.url), "utf8"),
   ]);
   const about = await aboutResponse.text();
   const contact = await contactResponse.text();
+  const musicContact = await musicContactResponse.text();
 
   assert.match(about, /I came to design through art, music and fashion/);
   assert.match(about, /I tend to think about the whole picture/);
@@ -117,32 +155,35 @@ test("About and Contact preserve the approved copy and form schema", async () =>
   assert.match(about, /That might mean a full identity/);
   assert.match(contact, /Have a project in mind/);
   assert.match(contact, /carmelfaraggi@gmail.com/);
-  for (const option of ["Brand Identity", "Graphic Design / One-off Project", "Music / Artist Visuals", "Not Sure Yet"]) {
+  for (const option of ["Brand Identity", "Graphic Design", "One-off Project", "Music / Artist Visuals", "Not Sure Yet"]) {
     assert.match(contactFormSource, new RegExp(option));
   }
   assert.doesNotMatch(contactFormSource, /name="interest"[^>]*required/);
+  assert.match(musicContact, /<option selected="">Music \/ Artist Visuals<\/option>/);
 });
 
-test("the corrected site retains the full motion system with an accessible fallback", async () => {
-  const [css, layoutSource, workResponse, aboutResponse, contactResponse, projectResponse] = await Promise.all([
+test("the corrected site keeps restrained interaction motion with an accessible fallback", async () => {
+  const [css, layoutSource, workResponse, artistsResponse, aboutResponse, projectResponse] = await Promise.all([
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     render("/work"),
+    render("/for-artists"),
     render("/about"),
-    render("/contact"),
     render("/work/proof"),
   ]);
   const renderedPages = await Promise.all(
-    [workResponse, aboutResponse, contactResponse, projectResponse].map((response) => response.text()),
+    [workResponse, artistsResponse, aboutResponse, projectResponse].map((response) => response.text()),
   );
 
   assert.match(layoutSource, /IntersectionObserver/);
   assert.match(layoutSource, /MutationObserver/);
-  assert.match(css, /@keyframes\s+word-left/);
-  assert.match(css, /@keyframes\s+sweep-right/);
   assert.match(css, /html\.js \[data-reveal\]\.is-visible/);
   assert.match(css, /\.mobile-menu\.is-open nav a[\s\S]*transition-delay/);
-  assert.match(css, /\.project-card a:hover \.artwork-image/);
+  assert.match(css, /\.project-card a:hover \.artwork-image[^}]*transform:\s*none/);
   assert.match(css, /prefers-reduced-motion[\s\S]*html\.js \[data-reveal\]/);
-  for (const html of renderedPages) assert.match(html, /data-reveal/);
+  const revealAttribute = /<[^>]+\sdata-reveal(?:=|\s|>)/;
+  assert.match(renderedPages[0], revealAttribute);
+  assert.doesNotMatch(renderedPages[1], revealAttribute);
+  assert.doesNotMatch(renderedPages[2], revealAttribute);
+  assert.match(renderedPages[3], revealAttribute);
 });

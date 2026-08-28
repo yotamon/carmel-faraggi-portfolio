@@ -17,6 +17,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${project.title} — Carmel Faraggi Art & Design`,
     description: `${project.description} ${project.services.join(", ")}.`,
+    openGraph: {
+      title: `${project.title} — Carmel Faraggi Art & Design`,
+      description: project.description,
+      images: [project.hero],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${project.title} — Carmel Faraggi Art & Design`,
+      description: project.description,
+      images: [project.hero],
+    },
   };
 }
 
@@ -65,7 +76,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         </div>
         <footer className="case-study-footer" data-reveal>
           <a href={`/work/${next.slug}`}>NEXT PROJECT <span aria-hidden="true">→</span><strong>{next.title}</strong></a>
-          <a href="/contact">HAVE A PROJECT IN MIND? <span aria-hidden="true">→</span></a>
+          <a href={project.group === "music-culture" ? "/contact?type=music" : "/contact"}>HAVE A PROJECT IN MIND? <span aria-hidden="true">→</span></a>
         </footer>
         </article>
       </main>

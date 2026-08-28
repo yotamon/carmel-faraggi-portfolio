@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 const links = [
   { href: "/work", label: "WORK" },
+  { href: "/for-artists", label: "FOR ARTISTS" },
   { href: "/about", label: "ABOUT" },
   { href: "/contact", label: "CONTACT" },
 ];
@@ -13,7 +14,10 @@ const mobileLinks = [{ href: "/", label: "HOME" }, ...links];
 
 function isCurrent(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
-  return href === "/work" ? pathname.startsWith("/work") : pathname === href;
+  const artistCaseStudy = /^\/work\/(molt-new-skin|vivi|eli-moss)$/.test(pathname);
+  if (href === "/for-artists") return pathname === href || artistCaseStudy;
+  if (href === "/work") return pathname.startsWith("/work") && !artistCaseStudy;
+  return pathname === href;
 }
 
 export function Navigation() {
