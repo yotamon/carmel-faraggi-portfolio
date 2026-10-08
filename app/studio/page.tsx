@@ -65,7 +65,7 @@ export default async function StudioPage({
   }
 
   const projects = await listStudioProjects();
-  void cleanupStaleStudioMedia();
+  await cleanupStaleStudioMedia();
   return (
     <StudioDashboard
       initialProjects={projects}

@@ -18,12 +18,6 @@ function dimension(value: FormDataEntryValue | null) {
   return Math.round(parsed);
 }
 
-function extensionFor(contentType: string) {
-  if (contentType === "image/png") return "png";
-  if (contentType === "image/jpeg") return "jpg";
-  return "webp";
-}
-
 export async function POST(request: Request) {
   try {
     assertSameOrigin(request);
@@ -37,35 +31,32 @@ export async function POST(request: Request) {
 
     const sourceWidth = dimension(form.get("width"));
     const sourceHeight = dimension(form.get("height"));
-    const original = await file.arrayBuffer();
-    let bytes = original;
-    let contentType = file.type;
-    let width = sourceWidth;
-    let height = sourceHeight;
-
     const images = getImagesBinding();
-    if (images) {
-      try {
-        const targetWidth = Math.min(sourceWidth, MAX_OUTPUT_WIDTH);
-        const transformed = await images
-          .input(new Blob([original], { type: file.type }).stream())
-          .transform(targetWidth < sourceWidth ? { width: targetWidth } : {})
-          .output({ format: "image/webp", quality: 84 });
-        const response = transformed.response();
-        if (response.ok) {
-          bytes = await response.arrayBuffer();
-          contentType = "image/webp";
-          width = targetWidth;
-          height = Math.max(1, Math.round(sourceHeight * (targetWidth / sourceWidth)));
-        }
-      } catch (error) {
-        console.error("Image optimization failed; storing the validated original.", error);
-      }
-    }
+    if (!images) throw new StudioRequestError(503, "Image processing is temporarily unavailable. Please try again shortly.");
 
-    const extension = extensionFor(contentType);
-    const key = "studio/" + new Date().getUTCFullYear() + "/" + crypto.randomUUID() + "." + extension;
+    const original = await file.arrayBuffer();
+    const targetWidth = Math.min(sourceWidth, MAX_OUTPUT_WIDTH);
+    let response: Response;
+    try {
+      const transformed = await images
+        .input(new Blob([original], { type: file.type }).stream())
+        .transform({ width: targetWidth })
+        .output({ format: "image/webp", quality: 84 });
+      response = transformed.response();
+    } catch (error) {
+      console.error("Carmel Studio image processing failed", error);
+      throw new StudioRequestError(422, "This image could not be processed. Export it again as JPEG, PNG or WebP and retry.");
+    }
+    if (!response.ok) throw new StudioRequestError(422, "This image could not be processed. Export it again and retry.");
+
+    const bytes = await response.arrayBuffer();
+    if (!bytes.byteLength) throw new StudioRequestError(422, "The processed image was empty. Please try another export.");
+    const contentType = "image/webp";
+    const width = targetWidth;
+    const height = Math.max(1, Math.round(sourceHeight * (targetWidth / sourceWidth)));
+    const key = "studio/" + new Date().getUTCFullYear() + "/" + crypto.randomUUID() + ".webp";
     const src = "/media/" + key;
+
     const bucket = getMediaBucket();
     await bucket.put(key, bytes, {
       httpMetadata: {

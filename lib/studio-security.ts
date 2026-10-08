@@ -9,7 +9,7 @@ export class StudioRequestError extends Error {
 
 export function assertSameOrigin(request: Request) {
   const origin = request.headers.get("origin");
-  if (!origin) return;
+  if (!origin) throw new StudioRequestError(403, "Unable to verify this request.");
   const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
   if (!host) throw new StudioRequestError(403, "Unable to verify this request.");
   let originHost = "";

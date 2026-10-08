@@ -36,6 +36,14 @@ export const portfolioProjects = sqliteTable("portfolio_projects", {
   index("portfolio_projects_status_order_idx").on(table.status, table.projectGroup, table.sortOrder),
 ]);
 
+export const portfolioSlugRedirects = sqliteTable("portfolio_slug_redirects", {
+  oldSlug: text("old_slug").primaryKey(),
+  projectId: text("project_id").notNull(),
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+}, (table) => [
+  index("portfolio_slug_redirects_project_idx").on(table.projectId),
+]);
+
 export const portfolioImages = sqliteTable("portfolio_images", {
   id: text("id").primaryKey(),
   projectId: text("project_id").notNull(),

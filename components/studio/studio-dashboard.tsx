@@ -35,6 +35,7 @@ export function StudioDashboard({
 
   async function persistOrder(group: Project["group"], nextGroup: StudioProject[]) {
     const ids = nextGroup.map((project) => project.id);
+    const previousProjects = projects;
     setProjects((current) => {
       const order = new Map(ids.map((id, index) => [id, (index + 1) * 10]));
       return current.map((project) => order.has(project.id) ? { ...project, sortOrder: order.get(project.id)! } : project);
@@ -52,7 +53,7 @@ export function StudioDashboard({
       setProjects(json.projects);
       setMessage("Project order saved.");
     } catch (error) {
-      setProjects(initialProjects);
+      setProjects(previousProjects);
       setMessage(error instanceof Error ? error.message : "Could not save the new order.");
     } finally {
       setBusy(false);

@@ -261,8 +261,8 @@ export function StudioProjectEditor({ initialProject }: { initialProject: Studio
 
   async function removeHero() {
     await deleteTemporaryMedia(form.heroStorageKey);
-    update("hero", "");
     setForm((current) => ({ ...current, hero: "", heroStorageKey: null, heroWidth: 1, heroHeight: 1, heroAlt: "" }));
+    setDirty(true);
   }
 
   async function removeGallery(index: number) {
@@ -487,7 +487,7 @@ export function StudioProjectEditor({ initialProject }: { initialProject: Studio
                   required
                 />
               </div>
-              <small>Changing this changes the public project URL.</small>
+              <small>Changing this changes the public project URL. The previous URL will redirect automatically.</small>
             </label>
             <div className="studio-publish-check">
               <strong>READY TO PUBLISH</strong>
