@@ -4,6 +4,7 @@ import { CoverRail } from "@/components/cover-rail";
 import { Navigation } from "@/components/navigation";
 import { listPublishedProjects } from "@/lib/portfolio-store";
 import { responsiveSrcSet } from "@/lib/projects";
+import { getSiteCopy } from "@/lib/site-copy";
 
 /* eslint-disable @next/next/no-img-element -- vinext has no image optimizer; responsive sources are provided explicitly. */
 
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
 const services = ["ARTIST IDENTITY", "COVER ART", "RELEASE VISUALS", "SOCIAL CONTENT", "PRINT & MERCH"];
 
 export default async function ForArtistsPage() {
-  const artistProjects = await listPublishedProjects("music-culture");
+  const [artistProjects, copy] = await Promise.all([listPublishedProjects("music-culture"), getSiteCopy()]);
   return (
     <>
       <Navigation />
@@ -40,9 +41,9 @@ export default async function ForArtistsPage() {
             <span>VISUAL</span><span>WORLDS</span><span>FOR ARTISTS</span>
           </h1>
           <div className="artists-hero-copy">
-            <p>Cover art, identities and release visuals for artists who want the image to feel as considered as the music.</p>
+            <p>{copy["artists.one"]}</p>
             <span className="artists-copy-rule" aria-hidden="true" />
-            <p>I’m a musician too, so I know how personal getting that right can be.</p>
+            <p>{copy["artists.two"]}</p>
             <a href="/contact?type=music" data-artist-event="for_artists_hero_cta_click">
               <span>START A PROJECT</span><span aria-hidden="true">→</span>
             </a>

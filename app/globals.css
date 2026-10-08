@@ -1589,3 +1589,20 @@ html.js [data-reveal].is-visible { opacity: 1; translate: 0 0; }
 .studio-inquiry-actions button.is-outline { background: transparent; color: var(--black); }
 .studio-inbox-tabs button:focus-visible, .studio-inquiry-actions :is(a,button):focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
 @media (max-width: 700px) { .studio-inquiry-head { display: block; } .studio-inbox { padding-top: 35px; } }
+
+
+/* Studio-editable copy: preserve line breaks as typography, not HTML */
+.home-services-copy, .contact-editable-heading { white-space: pre-line; }
+.studio-content-editor { max-width: 1050px; margin: 0 auto; padding: 60px clamp(20px,4vw,60px) 120px; }
+.studio-content-editor h1 { font-size: clamp(72px,11vw,150px); margin-bottom: 24px; }
+.studio-content-editor-lead { max-width: 640px; font-size: 17px; line-height: 1.5; }
+.studio-content-group { margin-top: 50px; border-top: 2px solid var(--black); padding-top: 22px; }
+.studio-content-group h2 { margin: 0 0 10px; font-size: 26px; }
+.studio-content-group p { margin: 0 0 25px; max-width: 640px; line-height: 1.4; }
+.studio-content-editor .studio-field { display: block; margin: 26px 0; }
+.studio-content-editor .studio-field textarea { width: 100%; min-height: 106px; padding: 16px; border: 1px solid rgba(13,13,13,.35); background: var(--off-white); color: var(--black); border-radius: 0; resize: vertical; line-height: 1.5; }
+.studio-content-editor .studio-field textarea:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+.studio-content-editor .studio-field small { display: block; margin-top: 7px; font-size: 12px; opacity: .7; }
+.studio-content-actions { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; position: sticky; bottom: 0; padding: 20px 0; background: #ece8e2; }
+.studio-content-editor .studio-form-message { min-height: 24px; }
+@media (max-width:767px) { .studio-content-editor { padding-top: 40px; } .studio-content-actions { gap: 10px; } }

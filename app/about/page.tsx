@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { Navigation } from "@/components/navigation";
+import { getSiteCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "About — Carmel Faraggi Art & Design",
   description: "About Carmel Faraggi, an independent London graphic designer and art director.",
 };
 
-export default function AboutPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AboutPage() {
+  const copy = await getSiteCopy();
   return (
     <>
       <Navigation />
@@ -16,15 +20,14 @@ export default function AboutPage() {
           <h1 className="display page-title">ABOUT</h1>
           <div className="about-copy">
             <div className="about-paragraphs about-paragraphs-desktop">
-              <p>I came to design through art, music and fashion, and I still approach it with an artist&apos;s eye. I tend to think about the whole picture: colour, composition, image, atmosphere and how everything sits together.</p>
-              <p>Art direction is a big part of how I work. Every project has its own character. I like finding that first, then building from it, with the people it needs to reach always in mind.</p>
-              <p>That might mean a full identity or just one thing that needs doing really well, from a campaign or record cover to a menu, poster or piece of social content.</p>
+              <p>{copy["about.one"]}</p>
+              <p>{copy["about.two"]}</p>
+              <p>{copy["about.three"]}</p>
             </div>
             <div className="about-paragraphs about-paragraphs-mobile">
-              <p>I came to design through art, music and fashion, and I still approach it with an artist&apos;s eye.</p>
-              <p>I tend to think about the whole picture: colour, composition, image, atmosphere and how everything sits together.</p>
-              <p>Art direction is a big part of how I work. Every project has its own character. I like finding that first, then building from it, with the people it needs to reach always in mind.</p>
-              <p>That might mean a full identity or just one thing that needs doing really well, from a campaign or record cover to a menu, poster or piece of social content.</p>
+              <p>{copy["about.one"]}</p>
+              <p>{copy["about.two"]}</p>
+              <p>{copy["about.three"]}</p>
             </div>
             <p className="services"><span>BRAND IDENTITY</span><b aria-hidden="true">/</b><span>GRAPHIC DESIGN</span><b aria-hidden="true">/</b><span>ART DIRECTION</span></p>
             <a className="about-contact-link" href="/contact">HAVE SOMETHING IN MIND? <span aria-hidden="true">↗</span></a>

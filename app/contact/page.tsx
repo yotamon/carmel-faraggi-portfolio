@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Navigation } from "@/components/navigation";
 import { ContactForm } from "@/components/contact-form";
 import { TrackedEmailLink } from "@/components/tracked-email-link";
+import { getSiteCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
   title: "Contact — Carmel Faraggi Art & Design",
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 
 export default async function ContactPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
   const { type } = await searchParams;
+  const copy = await getSiteCopy();
 
   return (
     <>
@@ -18,7 +20,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
         <div className="contact-red-plane" aria-hidden="true" />
         <section className="contact-content">
           <div className="contact-intro">
-            <h1>Have a project in mind?<br />Tell me a little about it.</h1>
+            <h1 className="contact-editable-heading">{copy["contact.heading"]}</h1>
             <TrackedEmailLink />
           </div>
           <ContactForm initialInterest={type === "music" ? "Music / Artist Visuals" : ""} />

@@ -1,6 +1,10 @@
 import { Navigation } from "@/components/navigation";
+import { getSiteCopy } from "@/lib/site-copy";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const copy = await getSiteCopy();
   return (
     <>
       <Navigation />
@@ -20,8 +24,8 @@ export default function Home() {
           </h1>
         </div>
         <div className="home-intro">
-          <p><strong>Independent<br className="mobile-only" /> design studio</strong></p>
-          <p>Brand identity /<br /> Graphic design /<br />Art direction</p>
+          <p><strong>{copy["home.intro"]}</strong></p>
+          <p className="home-services-copy">{copy["home.services"]}</p>
         </div>
         <a className="home-work-link" href="/work" aria-label="View Carmel Faraggi’s work">
           <span>VIEW WORK</span><span aria-hidden="true">→</span>
