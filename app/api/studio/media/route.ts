@@ -2,7 +2,7 @@ import { requireStudioApiUser } from "@/lib/studio-auth";
 import { ensureStudioSchema } from "@/lib/studio-db";
 import { deleteStudioMedia } from "@/lib/studio-media";
 import { getDatabase, getImagesBinding, getMediaBucket } from "@/lib/studio-runtime";
-import { assertSameOrigin, StudioRequestError, studioErrorResponse } from "@/lib/studio-security";
+import { assertSameOrigin, isStudioStorageKey, StudioRequestError, studioErrorResponse } from "@/lib/studio-security";
 import type { UploadedStudioMedia } from "@/lib/studio-types";
 
 const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
@@ -96,7 +96,7 @@ export async function DELETE(request: Request) {
     await requireStudioApiUser();
     await ensureStudioSchema();
     const key = new URL(request.url).searchParams.get("key") ?? "";
-    if (!key.startsWith("studio/")) throw new StudioRequestError(400, "Invalid media key.");
+    if (!isStudioStorageKey(key)) throw new StudioRequestError(400, "Invalid media key.");
     const db = await getDatabase();
     const media = await db.prepare("SELECT attached_project_id FROM portfolio_media WHERE storage_key = ? LIMIT 1")
       .bind(key)

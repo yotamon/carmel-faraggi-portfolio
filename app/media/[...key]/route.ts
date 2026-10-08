@@ -1,8 +1,9 @@
 import { getMediaBucket } from "@/lib/studio-runtime";
+import { isStudioStorageKey } from "@/lib/studio-security";
 
 function mediaKey(parts: string[]) {
   const key = parts.join("/");
-  if (!key.startsWith("studio/") || key.includes("..") || key.includes("\\")) return null;
+  if (!isStudioStorageKey(key)) return null;
   return key;
 }
 
