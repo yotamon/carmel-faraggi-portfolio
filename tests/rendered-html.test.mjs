@@ -197,3 +197,42 @@ test("the corrected site keeps restrained interaction motion with an accessible 
   assert.doesNotMatch(renderedPages[2], revealAttribute);
   assert.match(renderedPages[3], revealAttribute);
 });
+
+
+test("Carmel Studio is private, storage-backed and leaves the public portfolio resilient", async () => {
+  const [hosting, schema, studioPageSource, projectApi, mediaApi, publicWorkSource, storeSource, editorSource] = await Promise.all([
+    readFile(new URL("../.openai/hosting.json", import.meta.url), "utf8"),
+    readFile(new URL("../db/schema.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/studio/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/studio/projects/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/studio/media/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/work/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../lib/portfolio-store.ts", import.meta.url), "utf8"),
+    readFile(new URL("../components/studio/project-editor.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(hosting, /"d1"\s*:\s*"DB"/);
+  assert.match(hosting, /"r2"\s*:\s*"MEDIA"/);
+  assert.match(schema, /portfolioProjects/);
+  assert.match(schema, /portfolioMedia/);
+  assert.match(schema, /studioAdmins/);
+  assert.match(projectApi, /requireStudioApiUser/);
+  assert.match(mediaApi, /assertSameOrigin/);
+  assert.match(mediaApi, /image\/webp/);
+  assert.match(publicWorkSource, /listPublishedProjects/);
+  assert.match(storeSource, /legacyProjects/);
+  assert.match(storeSource, /status = 'published'/);
+  assert.match(editorSource, /SAVE DRAFT/);
+  assert.match(editorSource, /PUBLISH/);
+  assert.match(editorSource, /ALT TEXT/);
+  assert.match(studioPageSource, /does not receive your conversations/);
+
+  const response = await render("/studio");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /CARMEL/);
+  assert.match(html, /STUDIO/);
+  assert.match(html, /SIGN IN WITH CHATGPT/);
+  assert.match(html, /does not receive your conversations/);
+  assert.doesNotMatch(html, /YOUR WORK,.*YOUR CONTROL/s);
+});
