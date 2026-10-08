@@ -39,6 +39,12 @@ type ImageRow = {
   sort_order: number;
 };
 
+function isCloudflareRuntimeUnavailable(error: unknown) {
+  if (!(error instanceof Error)) return false;
+  const code = "code" in error ? String((error as Error & { code?: unknown }).code ?? "") : "";
+  return code === "ERR_UNSUPPORTED_ESM_URL_SCHEME" || error.message.includes("cloudflare:");
+}
+
 let seedPromise: Promise<void> | null = null;
 
 async function ensurePortfolioReady() {
@@ -186,7 +192,7 @@ export async function listPublishedProjects(group?: Project["group"]): Promise<P
       : await queryProjects("WHERE status = 'published'");
     return items;
   } catch (error) {
-    if (!(error instanceof Error) || !error.message.includes("URL scheme")) {
+    if (!isCloudflareRuntimeUnavailable(error)) {
       console.error("Portfolio database unavailable; using bundled project data.", error);
     }
     return legacyFallback(group);
@@ -207,7 +213,7 @@ export async function getPublishedProjectRedirect(slug: string): Promise<string 
     ).bind(slug).first<{ slug: string }>();
     return row?.slug ?? null;
   } catch (error) {
-    if (!(error instanceof Error) || !error.message.includes("URL scheme")) {
+    if (!isCloudflareRuntimeUnavailable(error)) {
       console.error("Unable to resolve portfolio slug redirect.", error);
     }
     return null;
