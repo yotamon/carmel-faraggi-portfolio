@@ -2,7 +2,7 @@ import type { ChatGPTUser } from "@/app/chatgpt-auth";
 import { projects as legacyProjects, type Project } from "@/lib/projects";
 import { ensureStudioSchema } from "@/lib/studio-db";
 import { getDatabase } from "@/lib/studio-runtime";
-import { StudioRequestError, safeSlug } from "@/lib/studio-security";
+import { isStaticProjectMediaPath, isStudioStorageKey, StudioRequestError, safeSlug } from "@/lib/studio-security";
 import type { ProjectStatus, StudioImage, StudioProject, StudioProjectPayload } from "@/lib/studio-types";
 
 type ProjectRow = {
@@ -54,6 +54,9 @@ async function ensurePortfolioReady() {
 
 async function seedLegacyProjects() {
   const db = await getDatabase();
+  const existing = await db.prepare("SELECT COUNT(*) AS count FROM portfolio_projects").first<{ count: number }>();
+  if (Number(existing?.count ?? 0) > 0) return;
+
   const statements: D1PreparedStatement[] = [];
   legacyProjects.forEach((project, projectIndex) => {
     const id = "legacy-" + project.slug;
@@ -183,7 +186,9 @@ export async function listPublishedProjects(group?: Project["group"]): Promise<P
       : await queryProjects("WHERE status = 'published'");
     return items;
   } catch (error) {
-    console.error("Portfolio database unavailable; using bundled project data.", error);
+    if (!(error instanceof Error) || !error.message.includes("URL scheme")) {
+      console.error("Portfolio database unavailable; using bundled project data.", error);
+    }
     return legacyFallback(group);
   }
 }
@@ -202,7 +207,9 @@ export async function getPublishedProjectRedirect(slug: string): Promise<string 
     ).bind(slug).first<{ slug: string }>();
     return row?.slug ?? null;
   } catch (error) {
-    console.error("Unable to resolve portfolio slug redirect.", error);
+    if (!(error instanceof Error) || !error.message.includes("URL scheme")) {
+      console.error("Unable to resolve portfolio slug redirect.", error);
+    }
     return null;
   }
 }
@@ -250,14 +257,22 @@ function validatePayload(input: StudioProjectPayload) {
   if (!year) throw new StudioRequestError(400, "Add a year.");
   if (services.some((service) => service.length > 80)) throw new StudioRequestError(400, "Keep each service under 80 characters.");
   if (hero && !isAllowedMediaPath(hero)) throw new StudioRequestError(400, "The cover image must come from this site.");
-  if (heroStorageKey && hero !== "/media/" + heroStorageKey) throw new StudioRequestError(400, "The cover image reference is invalid.");
+  if (hero.startsWith("/media/") && !heroStorageKey) throw new StudioRequestError(400, "The cover image storage reference is missing.");
+  if (heroStorageKey && (!isStudioStorageKey(heroStorageKey) || hero !== "/media/" + heroStorageKey)) {
+    throw new StudioRequestError(400, "The cover image reference is invalid.");
+  }
+  if (hero.startsWith("/projects/") && heroStorageKey) throw new StudioRequestError(400, "The cover image reference is invalid.");
 
   const gallery = Array.isArray(input.gallery) ? input.gallery.slice(0, 40).map((image, index) => {
     const src = typeof image.src === "string" ? image.src.trim() : "";
     const alt = typeof image.alt === "string" ? image.alt.trim().slice(0, 300) : "";
     const storageKey = typeof image.storageKey === "string" && image.storageKey ? image.storageKey : null;
     if (!src || !isAllowedMediaPath(src)) throw new StudioRequestError(400, "Gallery image " + (index + 1) + " is invalid.");
-    if (storageKey && src !== "/media/" + storageKey) throw new StudioRequestError(400, "Gallery image " + (index + 1) + " has an invalid storage reference.");
+    if (src.startsWith("/media/") && !storageKey) throw new StudioRequestError(400, "Gallery image " + (index + 1) + " is missing its storage reference.");
+    if (storageKey && (!isStudioStorageKey(storageKey) || src !== "/media/" + storageKey)) {
+      throw new StudioRequestError(400, "Gallery image " + (index + 1) + " has an invalid storage reference.");
+    }
+    if (src.startsWith("/projects/") && storageKey) throw new StudioRequestError(400, "Gallery image " + (index + 1) + " has an invalid storage reference.");
     return {
       src,
       alt,
@@ -300,7 +315,9 @@ function positiveInt(value: unknown) {
 }
 
 function isAllowedMediaPath(src: string) {
-  return src.startsWith("/projects/") || src.startsWith("/media/");
+  if (isStaticProjectMediaPath(src)) return true;
+  if (!src.startsWith("/media/")) return false;
+  return isStudioStorageKey(src.slice("/media/".length));
 }
 
 async function assertUniqueSlug(slug: string, exceptId?: string) {
@@ -359,10 +376,29 @@ function mediaKeys(project: StudioProject | ReturnType<typeof validatePayload>) 
   return keys;
 }
 
+async function assertMediaKeysAvailable(project: ReturnType<typeof validatePayload>, projectId?: string) {
+  const keys = [...mediaKeys(project)];
+  if (!keys.length) return;
+  const db = await getDatabase();
+  const placeholders = keys.map(() => "?").join(",");
+  const result = await db.prepare(
+    "SELECT storage_key, attached_project_id FROM portfolio_media WHERE storage_key IN (" + placeholders + ")",
+  ).bind(...keys).all<{ storage_key: string; attached_project_id: string | null }>();
+  const rows = new Map((result.results ?? []).map((row) => [row.storage_key, row.attached_project_id]));
+  for (const key of keys) {
+    if (!rows.has(key)) throw new StudioRequestError(409, "One of the uploaded images is no longer available. Upload it again.");
+    const attachedProjectId = rows.get(key);
+    if (attachedProjectId && attachedProjectId !== projectId) {
+      throw new StudioRequestError(409, "One of the uploaded images already belongs to another project.");
+    }
+  }
+}
+
 export async function createStudioProject(input: StudioProjectPayload, actor: ChatGPTUser) {
   await ensurePortfolioReady();
   const data = validatePayload(input);
   await assertUniqueSlug(data.slug);
+  await assertMediaKeysAvailable(data);
   const db = await getDatabase();
   const max = await db.prepare("SELECT COALESCE(MAX(sort_order), 0) AS value FROM portfolio_projects WHERE project_group = ?")
     .bind(data.group)
@@ -389,6 +425,7 @@ export async function updateStudioProject(id: string, input: StudioProjectPayloa
   if (Number(input.version) !== existing.version) throw new StudioRequestError(409, "This project changed in another tab. Reload before saving again.");
   const data = validatePayload(input);
   await assertUniqueSlug(data.slug, id);
+  await assertMediaKeysAvailable(data, id);
   const db = await getDatabase();
   const nextVersion = existing.version + 1;
 
