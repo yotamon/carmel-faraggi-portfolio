@@ -150,10 +150,6 @@ export function StudioProjectEditor({ initialProject }: { initialProject: Studio
     return () => window.removeEventListener("beforeunload", beforeUnload);
   }, [dirty]);
 
-  function mark(next: StudioProjectPayload) {
-    setForm(next);
-    setDirty(true);
-  }
 
   function update<K extends keyof StudioProjectPayload>(key: K, value: StudioProjectPayload[K]) {
     setForm((current) => ({ ...current, [key]: value }));
