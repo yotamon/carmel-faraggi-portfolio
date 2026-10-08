@@ -43,8 +43,8 @@ export function ProjectCaseStudy({
       </section>
       <div className="case-study-gallery">
         {project.gallery.map((image, index) => (
+          <figure className={image.width && image.height && image.height > image.width * 1.15 ? "case-gallery-portrait" : "case-gallery-landscape"} key={image.src + "-" + index} data-reveal="fade">
           <img
-            key={image.src + "-" + index}
             src={image.src}
             alt={image.alt}
             width={image.width ?? 1536}
@@ -53,9 +53,10 @@ export function ProjectCaseStudy({
             sizes="(max-width: 820px) calc(100vw - 36px), calc(100vw - 96px)"
             loading="lazy"
             decoding="async"
-            data-reveal="fade"
             style={{ "--item": index } as React.CSSProperties}
           />
+          {image.caption ? <figcaption>{image.caption}</figcaption> : null}
+          </figure>
         ))}
       </div>
       {!preview && next ? (

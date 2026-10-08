@@ -37,6 +37,7 @@ export type StudioProjectPayload = {
   gallery: Array<{
     src: string;
     alt: string;
+    caption?: string;
     width: number;
     height: number;
     storageKey: string | null;

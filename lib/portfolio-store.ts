@@ -133,6 +133,9 @@ async function hydrate(rows: ProjectRow[]) {
   const imageResult = await db.prepare("SELECT id, project_id, src, storage_key, alt, width, height, sort_order FROM portfolio_images WHERE project_id IN (" + placeholders + ") ORDER BY project_id, sort_order, id")
     .bind(...rows.map((row) => row.id))
     .all<ImageRow>();
+  const captions = await db.prepare("SELECT project_id,sort_order,caption FROM portfolio_gallery_captions WHERE project_id IN (" + placeholders + ")")
+    .bind(...rows.map((row) => row.id)).all<{project_id:string;sort_order:number;caption:string}>();
+  const captionMap = new Map((captions.results ?? []).map(item => [item.project_id + ":" + item.sort_order,item.caption]));
   const byProject = new Map<string, StudioImage[]>();
   for (const row of imageResult.results ?? []) {
     const list = byProject.get(row.project_id) ?? [];
@@ -141,6 +144,7 @@ async function hydrate(rows: ProjectRow[]) {
       src: row.src,
       storageKey: row.storage_key,
       alt: row.alt,
+      caption: captionMap.get(row.project_id + ":" + row.sort_order) ?? "",
       width: row.width,
       height: row.height,
       sortOrder: row.sort_order,
@@ -274,6 +278,7 @@ function validatePayload(input: StudioProjectPayload) {
   const gallery = Array.isArray(input.gallery) ? input.gallery.slice(0, 40).map((image, index) => {
     const src = typeof image.src === "string" ? image.src.trim() : "";
     const alt = typeof image.alt === "string" ? image.alt.trim().slice(0, 300) : "";
+    const caption = typeof image.caption === "string" ? image.caption.trim().slice(0, 400) : "";
     const storageKey = typeof image.storageKey === "string" && image.storageKey ? image.storageKey : null;
     if (!src || !isAllowedMediaPath(src)) throw new StudioRequestError(400, "Gallery image " + (index + 1) + " is invalid.");
     if (src.startsWith("/media/") && !storageKey) throw new StudioRequestError(400, "Gallery image " + (index + 1) + " is missing its storage reference.");
@@ -284,6 +289,7 @@ function validatePayload(input: StudioProjectPayload) {
     return {
       src,
       alt,
+      caption,
       storageKey,
       width: positiveInt(image.width),
       height: positiveInt(image.height),
@@ -365,6 +371,16 @@ function imageInsertStatements(
   });
 }
 
+function captionInsertStatements(db:D1Database, projectId:string, gallery:ReturnType<typeof validatePayload>["gallery"], requiredVersion?:number) {
+  return gallery.flatMap((image,index) => {
+    if(!image.caption)return [];
+    const order=(index+1)*10;
+    return [requiredVersion === undefined
+      ? db.prepare("INSERT INTO portfolio_gallery_captions(project_id,sort_order,caption) VALUES (?,?,?)").bind(projectId,order,image.caption)
+      : db.prepare("INSERT INTO portfolio_gallery_captions(project_id,sort_order,caption) SELECT ?,?,? WHERE EXISTS (SELECT 1 FROM portfolio_projects WHERE id=? AND version=?)").bind(projectId,order,image.caption,projectId,requiredVersion)];
+  });
+}
+
 function conditionalAuditStatement(
   db: D1Database,
   actor: ChatGPTUser,
@@ -417,6 +433,7 @@ export async function createStudioProject(input: StudioProjectPayload, actor: Ch
     db.prepare("INSERT INTO portfolio_projects (id, slug, title, category, project_group, year, services_json, layout, description, hero_src, hero_alt, hero_width, hero_height, hero_storage_key, status, sort_order, version, published_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, CASE WHEN ? = 'published' THEN CURRENT_TIMESTAMP ELSE NULL END, CURRENT_TIMESTAMP)")
       .bind(id, data.slug, data.title, data.category, data.group, data.year, JSON.stringify(data.services), data.layout, data.description, data.hero, data.heroAlt, data.heroWidth, data.heroHeight, data.heroStorageKey, data.status, sortOrder, data.status),
     ...imageInsertStatements(db, id, data.gallery),
+    ...captionInsertStatements(db,id,data.gallery),
   ];
   for (const key of mediaKeys(data)) {
     statements.push(db.prepare("UPDATE portfolio_media SET attached_project_id = ?, updated_at = CURRENT_TIMESTAMP WHERE storage_key = ?").bind(id, key));
@@ -451,6 +468,8 @@ export async function updateStudioProject(id: string, input: StudioProjectPayloa
     db.prepare("DELETE FROM portfolio_images WHERE project_id = ? AND EXISTS (SELECT 1 FROM portfolio_projects WHERE id = ? AND version = ?)")
       .bind(id, id, nextVersion),
     ...imageInsertStatements(db, id, data.gallery, nextVersion),
+    db.prepare("DELETE FROM portfolio_gallery_captions WHERE project_id=? AND EXISTS (SELECT 1 FROM portfolio_projects WHERE id=? AND version=?)").bind(id,id,nextVersion),
+    ...captionInsertStatements(db,id,data.gallery,nextVersion),
   ];
 
   if (data.slug !== existing.slug) {

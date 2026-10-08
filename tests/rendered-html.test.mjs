@@ -302,3 +302,17 @@ test("studio uploads can store browser-optimized WebP without an Images binding"
   assert.match(client,/canvas\.toBlob/);
   assert.match(covers,/studio_covers/);
 });
+
+
+test("optional case study captions can be edited, persisted and rendered without changing existing galleries", async () => {
+  const [store, editor, caseStudy, schema] = await Promise.all([
+    readFile(new URL("../lib/portfolio-store.ts", import.meta.url), "utf8"),
+    readFile(new URL("../components/studio/project-editor.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/project-case-study.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../lib/studio-db.ts", import.meta.url), "utf8"),
+  ]);
+  assert.match(schema,/portfolio_gallery_captions/);
+  assert.match(store,/captionInsertStatements/);
+  assert.match(editor,/VISIBLE CAPTION/);
+  assert.match(caseStudy,/figcaption/);
+});

@@ -58,6 +58,7 @@ function payloadFromProject(project: StudioProject): StudioProjectPayload {
     gallery: project.gallery.map((image) => ({
       src: image.src,
       alt: image.alt,
+      caption: image.caption ?? "",
       width: image.width ?? 1,
       height: image.height ?? 1,
       storageKey: image.storageKey,
@@ -221,6 +222,7 @@ export function StudioProjectEditor({ initialProject }: { initialProject: Studio
               src: media.src,
               storageKey: media.storageKey,
               alt: "",
+              caption: "",
               width: media.width,
               height: media.height,
             },
@@ -564,6 +566,20 @@ export function StudioProjectEditor({ initialProject }: { initialProject: Studio
                           }}
                           placeholder="Describe this image."
                         />
+                      </label>
+                      <label className="studio-field">
+                        <span>VISIBLE CAPTION (OPTIONAL)</span>
+                        <input
+                          value={image.caption ?? ""}
+                          maxLength={400}
+                          onChange={(event) => {
+                            const next = [...form.gallery];
+                            next[index] = { ...next[index], caption: event.target.value };
+                            update("gallery", next);
+                          }}
+                          placeholder="A short sentence about this artwork or application."
+                        />
+                        <small>Leave blank to show the image without a caption.</small>
                       </label>
                       <div className="studio-gallery-meta">
                         <span>{image.width} × {image.height}px</span>

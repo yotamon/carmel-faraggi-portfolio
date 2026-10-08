@@ -10,7 +10,7 @@ export type Project = {
   heroAlt: string;
   heroWidth: number;
   heroHeight: number;
-  gallery: { src: string; alt: string; width?: number; height?: number }[];
+  gallery: { src: string; alt: string; caption?: string; width?: number; height?: number }[];
   description: string;
 };
 

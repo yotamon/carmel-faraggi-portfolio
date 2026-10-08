@@ -82,6 +82,12 @@ export const portfolioImages = sqliteTable("portfolio_images", {
   index("portfolio_images_project_order_idx").on(table.projectId, table.sortOrder),
 ]);
 
+export const portfolioGalleryCaptions = sqliteTable("portfolio_gallery_captions", {
+  projectId: text("project_id").notNull(),
+  sortOrder: integer("sort_order").notNull(),
+  caption: text("caption").notNull(),
+});
+
 export const portfolioMedia = sqliteTable("portfolio_media", {
   storageKey: text("storage_key").primaryKey(),
   src: text("src").notNull(),
