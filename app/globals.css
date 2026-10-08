@@ -799,7 +799,44 @@ html.js [data-reveal].is-visible { opacity: 1; translate: 0 0; }
 
 @media (max-width: 767px) {
   .artists-hero { min-height: clamp(710px, 190vw, 850px); }
-  .artists-contact-word { font-size: 54vw; }
+
+  /* Keep the mobile closing composition legible: the previous oversized,
+     absolutely-positioned CONTACT word clipped off-screen and covered the CTA. */
+  .artists-closing {
+    display: flex;
+    min-height: 360px;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 96px var(--pad) calc(28px + env(safe-area-inset-bottom));
+  }
+  .artists-contact-word {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: max-content;
+    margin: 0 0 22px -3px;
+    font-size: clamp(126px, 38vw, 165px);
+    line-height: .68;
+    transform: scaleX(.58);
+    transform-origin: left bottom;
+  }
+  .artists-closing-copy {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    padding: 0;
+  }
+  .artists-closing-copy h2 {
+    max-width: none;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+  .artists-closing-copy a {
+    gap: 12px;
+    margin-top: 10px;
+    font-size: 12px;
+  }
 }
 
 @media (min-width: 1200px) and (max-width: 1399px) {
