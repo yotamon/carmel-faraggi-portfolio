@@ -74,7 +74,7 @@ test("every inner page exposes an explicit route back home", async () => {
   assert.match(navigationSource, /className="home-back-link"[^>]*href="\/"/);
   assert.match(navigationSource, /mobileLinks\s*=\s*\[\{\s*href:\s*"\/",\s*label:\s*"HOME"/);
 
-  for (const path of ["/work", "/for-artists", "/about", "/contact", "/work/proof", "/work/vivi"]) {
+  for (const path of ["/work", "/for-artists", "/about", "/contact", "/work/clawd", "/work/flower-traffic", "/work/iconic", "/work/cold-hearted-gelato", "/work/proof", "/work/vivi"]) {
     const response = await render(path);
     assert.equal(response.status, 200);
     const html = await response.text();
@@ -101,15 +101,25 @@ test("review-locked portfolio labels and placeholder removals are rendered", asy
   assert.equal(response.status, 200);
   const html = await response.text();
 
-  for (const category of ["FOOD + HOSPITALITY", "BEAUTY + WELLNESS"]) {
+  for (const category of ["FOOD + HOSPITALITY", "BEAUTY + WELLNESS", "RETAIL + LIFESTYLE"]) {
     assert.match(html, new RegExp(category.replaceAll("+", "\\+")));
   }
   assert.doesNotMatch(html, /NORTH BOUND|STUDIO AURORA|MAREA/);
   assert.doesNotMatch(html, /MOLT|VIVI|ELI MOSS/);
-  for (const title of ["PROOF", "ANNA VALE", "TAVLA", "SOPHIA GREEN"]) assert.match(html, new RegExp(title));
-  assert.ok(html.indexOf("PROOF") < html.indexOf("ANNA VALE"));
-  assert.ok(html.indexOf("ANNA VALE") < html.indexOf("TAVLA"));
-  assert.ok(html.indexOf("TAVLA") < html.indexOf("SOPHIA GREEN"));
+  for (const title of ["CLAWD", "FLOWER TRAFFIC", "ICON!C", "COLD HEARTED GELATO", "PROOF", "ANNA VALE", "TAVLA", "SOPHIA GREEN"]) {
+    assert.ok(html.includes(title), `missing work project: ${title}`);
+  }
+  for (const [before, after] of [
+    ["CLAWD", "FLOWER TRAFFIC"],
+    ["FLOWER TRAFFIC", "ICON!C"],
+    ["ICON!C", "COLD HEARTED GELATO"],
+    ["COLD HEARTED GELATO", "PROOF"],
+    ["PROOF", "ANNA VALE"],
+    ["ANNA VALE", "TAVLA"],
+    ["TAVLA", "SOPHIA GREEN"],
+  ]) {
+    assert.ok(html.indexOf(before) < html.indexOf(after), `${before} should appear before ${after}`);
+  }
   assert.match(html, /href="\/for-artists"/);
 });
 

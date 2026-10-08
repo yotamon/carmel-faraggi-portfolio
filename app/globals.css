@@ -313,6 +313,14 @@ html.js [data-reveal].is-visible { opacity: 1; translate: 0 0; }
 .project-artwork.artwork-anna-vale { aspect-ratio: 786 / 216; }
 .project-artwork.artwork-sophia-green { aspect-ratio: 925 / 192; }
 .project-artwork.artwork-molt-new-skin { aspect-ratio: 3.6 / 1; }
+.project-artwork.artwork-clawd { aspect-ratio: 2.65 / 1; }
+.project-artwork.artwork-flower-traffic { aspect-ratio: 3.05 / 1; }
+.project-artwork.artwork-iconic { aspect-ratio: 3 / 1; }
+.project-artwork.artwork-cold-hearted-gelato { aspect-ratio: 3 / 1; }
+.project-artwork.artwork-clawd .artwork-image { object-position: center 46%; }
+.project-artwork.artwork-flower-traffic .artwork-image { object-position: center 48%; }
+.project-artwork.artwork-iconic .artwork-image { object-position: center 50%; }
+.project-artwork.artwork-cold-hearted-gelato .artwork-image { object-position: center 48%; }
 .field:has(input:user-invalid), .field:has(textarea:user-invalid), .field:has(select:user-invalid) { border-color: var(--red); }
 .work-ending-links { margin-top: 26px; }
 .work-contact-link { display: flex; gap: 48px; align-items: center; min-height: 66px; padding: 20px 12px; margin-top: 0; border-top: 1px solid var(--black); transition: color 200ms var(--ease-out); }
