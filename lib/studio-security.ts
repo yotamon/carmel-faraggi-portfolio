@@ -40,3 +40,11 @@ export function safeSlug(value: unknown) {
     .replace(/^-+|-+$/g, "")
     .slice(0, 80);
 }
+
+export function isStudioStorageKey(value: string) {
+  return /^studio\/\d{4}\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.webp$/i.test(value);
+}
+
+export function isStaticProjectMediaPath(value: string) {
+  return /^\/projects\/[a-z0-9-]+\/[a-zA-Z0-9._-]+$/.test(value);
+}

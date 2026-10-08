@@ -10,13 +10,19 @@ export async function getStudioAccess(user: ChatGPTUser | null) {
     await ensureStudioSchema();
     const db = await getDatabase();
     const email = user.email.trim().toLowerCase();
-    const admin = await db.prepare("SELECT email, role FROM studio_admins WHERE lower(email) = ? LIMIT 1")
+    const admin = await db.prepare("SELECT email, role, user_id FROM studio_admins WHERE lower(email) = ? LIMIT 1")
       .bind(email)
-      .first<{ email: string; role: string }>();
+      .first<{ email: string; role: string; user_id: string | null }>();
     if (!admin) return { user, allowed: false };
-    await db.prepare("UPDATE studio_admins SET user_id = ?, display_name = ?, last_seen_at = CURRENT_TIMESTAMP WHERE lower(email) = ?")
-      .bind(user.userId, user.fullName ?? user.displayName, email)
+    if (admin.user_id && admin.user_id !== user.userId) {
+      return { user, allowed: false };
+    }
+    const update = await db.prepare("UPDATE studio_admins SET user_id = ?, display_name = ?, last_seen_at = CURRENT_TIMESTAMP WHERE lower(email) = ? AND (user_id IS NULL OR user_id = ?)")
+      .bind(user.userId, user.fullName ?? user.displayName, email, user.userId)
       .run();
+    if (!update.success || Number(update.meta?.changes ?? 0) !== 1) {
+      return { user, allowed: false };
+    }
     return { user, allowed: true, role: admin.role };
   } catch (error) {
     console.error("Unable to verify Carmel Studio access", error);
