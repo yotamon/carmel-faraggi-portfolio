@@ -6,6 +6,7 @@ import { listPublishedProjects } from "@/lib/portfolio-store";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/work" },
   title: "Work — Carmel Faraggi Art & Design",
   description: "Selected brand identity, graphic design and art direction projects by Carmel Faraggi.",
 };

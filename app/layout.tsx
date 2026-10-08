@@ -19,6 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description: "Independent London design studio for brand identity, graphic design and art direction.",
     icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
     openGraph: {
+      type: "website",
       title: "Carmel Faraggi — Art & Design",
       description: "Brand identity, graphic design and art direction from an independent London studio.",
       images: [new URL("/og.png", metadataBase).toString()],
@@ -31,6 +32,17 @@ export async function generateMetadata(): Promise<Metadata> {
     },
   };
 }
+
+const studioSchema = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  name: "Carmel Faraggi Art & Design",
+  description: "Independent London design studio for brand identity, graphic design and art direction.",
+  email: "carmelfaraggi@gmail.com",
+  address: { "@type": "PostalAddress", addressLocality: "London", addressCountry: "GB" },
+  areaServed: "Worldwide",
+  serviceType: ["Brand identity", "Graphic design", "Art direction", "Cover art", "Artist branding"],
+};
 
 const revealBootstrap = `(function () {
   var root = document.documentElement;
@@ -62,6 +74,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(studioSchema).replace(/</g, "\\u003c") }} />
         <script dangerouslySetInnerHTML={{ __html: revealBootstrap }} />
         {children}
       </body>

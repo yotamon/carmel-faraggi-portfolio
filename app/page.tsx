@@ -1,7 +1,9 @@
+import type { Metadata } from "next";
 import { Navigation } from "@/components/navigation";
 import { getSiteCopy } from "@/lib/site-copy";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default async function Home() {
   const copy = await getSiteCopy();

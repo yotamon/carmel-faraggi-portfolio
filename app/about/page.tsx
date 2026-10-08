@@ -3,6 +3,7 @@ import { Navigation } from "@/components/navigation";
 import { getSiteCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/about" },
   title: "About — Carmel Faraggi Art & Design",
   description: "About Carmel Faraggi, an independent London graphic designer and art director.",
 };

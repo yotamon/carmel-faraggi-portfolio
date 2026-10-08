@@ -5,6 +5,7 @@ import { TrackedEmailLink } from "@/components/tracked-email-link";
 import { getSiteCopy } from "@/lib/site-copy";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/contact" },
   title: "Contact — Carmel Faraggi Art & Design",
   description: "Start a brand identity, graphic design, art direction or music project with Carmel Faraggi.",
 };

@@ -11,6 +11,7 @@ import { getSiteCopy } from "@/lib/site-copy";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/for-artists" },
   title: "Cover Art & Artist Branding — Carmel Faraggi Art & Design",
   description: "Cover art, artist identities and release visuals by Carmel Faraggi — graphic design and art direction for musicians and artists.",
   openGraph: {
@@ -69,7 +70,7 @@ export default async function ForArtistsPage() {
                     alt={project.heroAlt}
                     width={project.heroWidth}
                     height={project.heroHeight}
-                    loading="eager"
+                    loading="lazy"
                     decoding="async"
                   />
                 </span>

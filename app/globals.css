@@ -12,8 +12,7 @@
 * { box-sizing: border-box; }
 html { background: var(--off-white); color: var(--black); scroll-behavior: smooth; }
 body { margin: 0; background: var(--off-white); color: var(--black); font-family: var(--sans); }
-html { scrollbar-width: none; }
-body::-webkit-scrollbar { display: none; }
+/* Keep native scrollbars for discoverability, keyboard and assistive navigation. */
 body.menu-open { overflow: hidden; }
 a { color: inherit; text-decoration: none; }
 button, input, textarea, select { font: inherit; }

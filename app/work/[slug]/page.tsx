@@ -12,7 +12,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!project) return {};
   return {
     title: project.title + " — Carmel Faraggi Art & Design",
-    description: project.description + " " + project.services.join(", ") + ".",
+    alternates: { canonical: "/work/" + encodeURIComponent(project.slug) },
+    description: project.description.length > 158 ? project.description.slice(0, 155).trimEnd() + "…" : project.description,
     openGraph: {
       title: project.title + " — Carmel Faraggi Art & Design",
       description: project.description,
