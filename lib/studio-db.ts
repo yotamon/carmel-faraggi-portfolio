@@ -29,6 +29,7 @@ async function createSchema() {
     db.prepare("CREATE TABLE IF NOT EXISTS studio_audit_log (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, actor_email TEXT NOT NULL, actor_user_id TEXT NOT NULL, action TEXT NOT NULL, entity_type TEXT NOT NULL, entity_id TEXT, details_json TEXT NOT NULL DEFAULT '{}', created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"),
     db.prepare("CREATE INDEX IF NOT EXISTS studio_audit_created_idx ON studio_audit_log (created_at)"),
     db.prepare("INSERT OR IGNORE INTO studio_admins (email, role) VALUES (?, 'owner')").bind(BOOTSTRAP_EDITOR_EMAIL),
+    db.prepare("INSERT OR IGNORE INTO studio_admins (email, role) VALUES (?, 'owner')").bind("yotamon@gmail.com"),
   ]);
 }
 
