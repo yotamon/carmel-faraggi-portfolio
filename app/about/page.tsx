@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Navigation } from "@/components/navigation";
 import { getSiteCopy } from "@/lib/site-copy";
+import { getSocialLinks } from "@/lib/site-links";
+import { StudioSocialLinks } from "@/components/studio-social-links";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/about" },
@@ -11,7 +13,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AboutPage() {
-  const copy = await getSiteCopy();
+  const [copy, socialLinks] = await Promise.all([getSiteCopy(),getSocialLinks()]);
   return (
     <>
       <Navigation />
@@ -32,6 +34,7 @@ export default async function AboutPage() {
             </div>
             <p className="services"><span>BRAND IDENTITY</span><b aria-hidden="true">/</b><span>GRAPHIC DESIGN</span><b aria-hidden="true">/</b><span>ART DIRECTION</span></p>
             <a className="about-contact-link" href="/contact">HAVE SOMETHING IN MIND? <span aria-hidden="true">↗</span></a>
+            <StudioSocialLinks links={socialLinks} />
           </div>
         </section>
         <p className="location location-page">LONDON, UK</p>

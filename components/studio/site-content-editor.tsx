@@ -42,7 +42,7 @@ export function StudioSiteContent({initialCopy,signOutHref}:{initialCopy:SiteCop
   return <main className="studio-app">
     <header className="studio-topbar">
       <a href="/studio" className="studio-brand"><span>CARMEL</span><strong>STUDIO</strong></a>
-      <div className="studio-topbar-actions"><a href="/studio">PROJECTS</a><a href="/studio/inbox">INBOX</a><a href="/studio/covers">COVERS</a><a href="/studio/insights">INSIGHTS</a><a href={signOutHref}>SIGN OUT</a></div>
+      <div className="studio-topbar-actions"><a href="/studio">PROJECTS</a><a href="/studio/inbox">INBOX</a><a href="/studio/covers">COVERS</a><a href="/studio/insights">INSIGHTS</a><a href="/studio/settings">SETTINGS</a><a href={signOutHref}>SIGN OUT</a></div>
     </header>
     <div className="studio-content-editor">
       <p className="studio-kicker">PRIVATE / TEXT CONTENT</p>

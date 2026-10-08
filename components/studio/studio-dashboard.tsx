@@ -169,6 +169,7 @@ export function StudioDashboard({
           <a href="/studio/content">SITE CONTENT</a>
           <a href="/studio/covers">COVERS</a>
           <a href="/studio/insights">INSIGHTS</a>
+          <a href="/studio/settings">SETTINGS</a>
           <a href="/" target="_blank" rel="noreferrer">VIEW SITE ↗</a>
           <span className="studio-user">{userName}</span>
           <a href={signOutHref}>SIGN OUT</a>

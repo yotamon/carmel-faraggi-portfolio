@@ -9,6 +9,7 @@ Private content tools: /studio, /studio/content, /studio/covers, /studio/inbox, 
 - To grant access, verify the authorized email in `studio_admins`; the login user ID is bound after first successful sign-in. Do not disable authorization for convenience.
 - Project editing is available in Studio, with draft, preview, publish, archive and reordering.
 - Site Content edits home/about/artist/contact copy; Selected Covers can reorder, hide, describe and upload album artwork.
+- Site Settings manages optional Instagram, Behance and LinkedIn links. Only verified HTTPS links entered by the owner are displayed.
 - No layout control is exposed to non-developers, intentionally preserving the design system.
 - Uploaded images are resized and converted to WebP in the browser, stored in R2 and tracked in D1; a Cloudflare Images binding is optional.
 

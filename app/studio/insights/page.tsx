@@ -17,7 +17,7 @@ export default async function InsightsPage() {
   return <main className="studio-app">
     <header className="studio-topbar">
       <a className="studio-brand" href="/studio"><span>CARMEL</span><strong>STUDIO</strong></a>
-      <div className="studio-topbar-actions"><a href="/studio">PROJECTS</a><a href="/studio/inbox">INBOX</a><a href="/studio/content">SITE CONTENT</a><a href="/studio/covers">COVERS</a></div>
+      <div className="studio-topbar-actions"><a href="/studio">PROJECTS</a><a href="/studio/inbox">INBOX</a><a href="/studio/content">SITE CONTENT</a><a href="/studio/covers">COVERS</a><a href="/studio/settings">SETTINGS</a></div>
     </header>
     <section className="studio-insights">
       <p className="studio-kicker">PRIVATE / LAST 30 DAYS</p>

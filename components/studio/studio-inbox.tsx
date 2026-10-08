@@ -26,7 +26,7 @@ export function StudioInbox({initialInquiries,signOutHref}: {initialInquiries:St
   return <main className="studio-app">
     <header className="studio-topbar">
       <a className="studio-brand" href="/studio"><span>CARMEL</span><strong>STUDIO</strong></a>
-      <div className="studio-topbar-actions"><a href="/studio">PROJECTS</a><a href="/studio/content">SITE CONTENT</a><a href="/studio/covers">COVERS</a><a href="/studio/insights">INSIGHTS</a><a href={signOutHref}>SIGN OUT</a></div>
+      <div className="studio-topbar-actions"><a href="/studio">PROJECTS</a><a href="/studio/content">SITE CONTENT</a><a href="/studio/covers">COVERS</a><a href="/studio/insights">INSIGHTS</a><a href="/studio/settings">SETTINGS</a><a href={signOutHref}>SIGN OUT</a></div>
     </header>
     <div className="studio-inbox">
       <p className="studio-kicker">PRIVATE / CLIENT ENQUIRIES</p>

@@ -18,6 +18,12 @@ export const studioEventCounts = sqliteTable("studio_event_counts", {
   eventCount: integer("event_count").notNull().default(0),
 });
 
+export const studioSocialLinks = sqliteTable("studio_social_links", {
+  linkKey: text("link_key").primaryKey(),
+  linkUrl: text("link_url").notNull().default(""),
+  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
 export const studioCovers = sqliteTable("studio_covers", {
   id: text("id").primaryKey(),
   src: text("src").notNull().unique(),
