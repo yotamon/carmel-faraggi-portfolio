@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const contactSubmissions = sqliteTable("contact_submissions", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -32,7 +32,9 @@ export const portfolioProjects = sqliteTable("portfolio_projects", {
   publishedAt: text("published_at"),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-});
+}, (table) => [
+  index("portfolio_projects_status_order_idx").on(table.status, table.projectGroup, table.sortOrder),
+]);
 
 export const portfolioImages = sqliteTable("portfolio_images", {
   id: text("id").primaryKey(),
@@ -44,7 +46,9 @@ export const portfolioImages = sqliteTable("portfolio_images", {
   height: integer("height").notNull().default(1),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-});
+}, (table) => [
+  index("portfolio_images_project_order_idx").on(table.projectId, table.sortOrder),
+]);
 
 export const portfolioMedia = sqliteTable("portfolio_media", {
   storageKey: text("storage_key").primaryKey(),
@@ -56,7 +60,9 @@ export const portfolioMedia = sqliteTable("portfolio_media", {
   attachedProjectId: text("attached_project_id"),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-});
+}, (table) => [
+  index("portfolio_media_attachment_idx").on(table.attachedProjectId, table.createdAt),
+]);
 
 export const studioAdmins = sqliteTable("studio_admins", {
   email: text("email").primaryKey(),
@@ -76,4 +82,6 @@ export const studioAuditLog = sqliteTable("studio_audit_log", {
   entityId: text("entity_id"),
   detailsJson: text("details_json").notNull().default("{}"),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-});
+}, (table) => [
+  index("studio_audit_created_idx").on(table.createdAt),
+]);
