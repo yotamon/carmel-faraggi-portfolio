@@ -27,6 +27,7 @@ export default function AboutPage() {
               <p>That might mean a full identity or just one thing that needs doing really well, from a campaign or record cover to a menu, poster or piece of social content.</p>
             </div>
             <p className="services"><span>BRAND IDENTITY</span><b aria-hidden="true">/</b><span>GRAPHIC DESIGN</span><b aria-hidden="true">/</b><span>ART DIRECTION</span></p>
+            <a className="about-contact-link" href="/contact">HAVE SOMETHING IN MIND? <span aria-hidden="true">↗</span></a>
           </div>
         </section>
         <p className="location location-page">LONDON, UK</p>

@@ -2,7 +2,8 @@ import { env } from "cloudflare:workers";
 
 const options = new Set([
   "Brand Identity",
-  "Graphic Design / One-off Project",
+  "Graphic Design",
+  "One-off Project",
   "Music / Artist Visuals",
   "Not Sure Yet",
 ]);

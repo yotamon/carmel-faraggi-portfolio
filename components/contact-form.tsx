@@ -129,6 +129,7 @@ export function ContactForm({ initialInterest = "" }: { initialInterest?: string
         {state !== "success" ? <span className="arrow" aria-hidden="true">→</span> : null}
       </button>
       <p className={`form-status ${state}`} role="status" aria-live="polite">{message}</p>
+      <p className="form-reassurance">No pressure to have everything figured out. A short introduction is enough.</p>
     </form>
   );
 }

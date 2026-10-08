@@ -92,6 +92,15 @@ export default async function ForArtistsPage() {
           </ul>
         </section>
 
+        <section className="artists-section artists-process" aria-labelledby="artists-process-title">
+          <h2 id="artists-process-title" className="artists-section-title">HOW WE WORK TOGETHER</h2>
+          <ol>
+            <li><span>01 / LISTEN</span><p>Tell me about the music, the mood and where you want to take it.</p></li>
+            <li><span>02 / BUILD</span><p>We develop a visual direction that belongs to the project.</p></li>
+            <li><span>03 / RELEASE</span><p>Artwork and supporting visuals, ready to carry the idea into the world.</p></li>
+          </ol>
+        </section>
+
         <section className="artists-closing" aria-labelledby="artists-closing-title">
           <p className="display artists-contact-word" aria-hidden="true">CONTACT</p>
           <div className="artists-closing-copy">
