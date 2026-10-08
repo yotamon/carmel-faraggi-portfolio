@@ -11,6 +11,12 @@ export const contactSubmissions = sqliteTable("contact_submissions", {
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
+export const studioContactState = sqliteTable("studio_contact_state", {
+  submissionId: integer("submission_id").primaryKey(),
+  status: text("status").notNull().default("new"),
+  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
 export const portfolioProjects = sqliteTable("portfolio_projects", {
   id: text("id").primaryKey(),
   slug: text("slug").notNull().unique(),

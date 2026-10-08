@@ -8,6 +8,45 @@ const options = new Set([
   "Not Sure Yet",
 ]);
 
+type Inquiry = { name: string; email: string; interest: string; project: string };
+
+type EmailBindings = {
+  RESEND_API_KEY?: string;
+  CONTACT_FROM_EMAIL?: string;
+  CONTACT_NOTIFY_TO?: string;
+};
+
+async function notifyStudio(inquiry: Inquiry) {
+  const config = env as unknown as EmailBindings;
+  if (!config.RESEND_API_KEY || !config.CONTACT_FROM_EMAIL || !config.CONTACT_NOTIFY_TO) return;
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { "authorization": "Bearer " + config.RESEND_API_KEY, "content-type": "application/json" },
+      body: JSON.stringify({
+        from: config.CONTACT_FROM_EMAIL,
+        to: [config.CONTACT_NOTIFY_TO],
+        reply_to: inquiry.email,
+        subject: "New project inquiry — Carmel Studio",
+        text: [
+          "A new inquiry was saved in Carmel Studio.",
+          "",
+          "Name: " + inquiry.name,
+          "Email: " + inquiry.email,
+          "Interest: " + (inquiry.interest || "Not specified"),
+          "",
+          inquiry.project,
+          "",
+          "Sign in to Carmel Studio to manage this inquiry.",
+        ].join("\n"),
+      }),
+    });
+    if (!response.ok) console.error("Contact email alert failed:", response.status);
+  } catch (error) {
+    console.error("Contact email alert could not be delivered.", error instanceof Error ? error.name : "Unknown error");
+  }
+}
+
 function text(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -43,13 +82,19 @@ export async function POST(request: Request) {
       submission_key TEXT NOT NULL UNIQUE,
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     )`).run();
+    let alreadySaved = false;
     try {
       await db.prepare("INSERT INTO contact_submissions (name, email, interest, project, submission_key) VALUES (?, ?, ?, ?, ?)")
         .bind(name, email, interest, project, submissionKey)
         .run();
     } catch (error) {
       if (!(error instanceof Error) || !error.message.toLowerCase().includes("unique")) throw error;
+      alreadySaved = true;
     }
+
+    // Delivery to the studio inbox succeeds independently of optional email alerts.
+    // Resend credentials must be configured as Cloudflare secrets / variables.
+    if (!alreadySaved) await notifyStudio({ name, email, interest, project });
 
     return Response.json({ ok: true }, { status: 201 });
   } catch {

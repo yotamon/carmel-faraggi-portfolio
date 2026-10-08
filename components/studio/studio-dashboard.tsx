@@ -14,10 +14,12 @@ function statusLabel(status: StudioProject["status"]) {
 
 export function StudioDashboard({
   initialProjects,
+  newInquiryCount,
   userName,
   signOutHref,
 }: {
   initialProjects: StudioProject[];
+  newInquiryCount: number;
   userName: string;
   signOutHref: string;
 }) {
@@ -163,6 +165,8 @@ export function StudioDashboard({
       <header className="studio-topbar">
         <a className="studio-brand" href="/studio"><span>CARMEL</span><strong>STUDIO</strong></a>
         <div className="studio-topbar-actions">
+          <a href="/studio/inbox">INBOX{newInquiryCount ? " (" + newInquiryCount + ")" : ""}</a>
+          <a href="/studio/content">SITE CONTENT</a>
           <a href="/" target="_blank" rel="noreferrer">VIEW SITE ↗</a>
           <span className="studio-user">{userName}</span>
           <a href={signOutHref}>SIGN OUT</a>

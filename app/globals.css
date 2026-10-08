@@ -1567,3 +1567,25 @@ html.js [data-reveal].is-visible { opacity: 1; translate: 0 0; }
   .artists-process li p { margin: 12px 0; }
   .form-reassurance { max-width: 270px; }
 }
+
+
+/* Private inquiry management */
+.studio-inbox { max-width: 1200px; margin: 0 auto; padding: 60px clamp(20px, 4vw, 64px) 120px; }
+.studio-inbox h1 { font-size: clamp(72px, 12vw, 170px); }
+.studio-inbox-summary { margin: 18px 0 32px; max-width: 570px; line-height: 1.5; }
+.studio-inbox-tabs { display: flex; gap: 12px; flex-wrap: wrap; margin: 30px 0; }
+.studio-inbox-tabs button { background: transparent; border: 1px solid var(--black); padding: 12px 16px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.studio-inbox-tabs button.is-active { background: var(--black); color: var(--off-white); }
+.studio-inbox-list { display: grid; gap: 14px; }
+.studio-inquiry { padding: clamp(20px, 2.7vw, 36px); border: 1px solid rgba(13,13,13,.25); background: var(--off-white); }
+.studio-inquiry-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; }
+.studio-inquiry-head h2 { margin: 0 0 8px; font-size: clamp(20px, 2vw, 28px); }
+.studio-inquiry-meta { font-size: 12px; opacity: .7; margin: 0 0 18px; }
+.studio-inquiry-message { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; max-width: 70ch; }
+.studio-inquiry-email { overflow-wrap: anywhere; text-decoration: underline; text-underline-offset: 4px; }
+.studio-inquiry-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.studio-inquiry-actions button, .studio-inquiry-actions a { cursor: pointer; padding: 10px 14px; background: var(--black); color: var(--off-white); border: 1px solid var(--black); font-size: 12px; font-weight: 700; }
+.studio-inquiry-actions button:disabled { opacity: .4; cursor: wait; }
+.studio-inquiry-actions button.is-outline { background: transparent; color: var(--black); }
+.studio-inbox-tabs button:focus-visible, .studio-inquiry-actions :is(a,button):focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+@media (max-width: 700px) { .studio-inquiry-head { display: block; } .studio-inbox { padding-top: 35px; } }

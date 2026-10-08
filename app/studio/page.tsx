@@ -4,6 +4,7 @@ import { StudioDashboard } from "@/components/studio/studio-dashboard";
 import { listStudioProjects } from "@/lib/portfolio-store";
 import { getStudioAccess } from "@/lib/studio-auth";
 import { cleanupStaleStudioMedia } from "@/lib/studio-media";
+import { countNewInquiries } from "@/lib/contact-inbox";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +70,7 @@ export default async function StudioPage({
   return (
     <StudioDashboard
       initialProjects={projects}
+      newInquiryCount={await countNewInquiries()}
       userName={user.fullName ?? user.email}
       signOutHref={chatGPTSignOutPath("/")}
     />
