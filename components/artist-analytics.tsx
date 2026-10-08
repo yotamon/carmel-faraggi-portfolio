@@ -15,7 +15,7 @@ export function ArtistAnalytics() {
     const handleClick = (event: MouseEvent) => {
       const target = event.target instanceof Element ? event.target.closest<HTMLElement>("[data-artist-event]") : null;
       if (!target) return;
-      const detail = target.dataset.projectName ? { project: target.dataset.projectName } : {};
+      const detail: Record<string, string> = target.dataset.projectName ? { project: target.dataset.projectName } : {};
       track(target.dataset.artistEvent ?? "for_artists_interaction", detail);
     };
 

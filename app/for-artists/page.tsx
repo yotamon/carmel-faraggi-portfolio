@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 import { ArtistAnalytics } from "@/components/artist-analytics";
 import { CoverRail } from "@/components/cover-rail";
 import { Navigation } from "@/components/navigation";
-import { artistProjects, responsiveSrcSet } from "@/lib/projects";
+import { listPublishedProjects } from "@/lib/portfolio-store";
+import { responsiveSrcSet } from "@/lib/projects";
 
 /* eslint-disable @next/next/no-img-element -- vinext has no image optimizer; responsive sources are provided explicitly. */
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Cover Art & Artist Branding — Carmel Faraggi Art & Design",
@@ -24,7 +27,8 @@ export const metadata: Metadata = {
 
 const services = ["ARTIST IDENTITY", "COVER ART", "RELEASE VISUALS", "SOCIAL CONTENT", "PRINT & MERCH"];
 
-export default function ForArtistsPage() {
+export default async function ForArtistsPage() {
+  const artistProjects = await listPublishedProjects("music-culture");
   return (
     <>
       <Navigation />
@@ -50,8 +54,8 @@ export default function ForArtistsPage() {
           <div className="featured-project-grid">
             {artistProjects.map((project) => (
               <a
-                className={`featured-project featured-${project.slug}`}
-                href={`/work/${project.slug}`}
+                className={"featured-project featured-" + project.slug}
+                href={"/work/" + project.slug}
                 data-artist-event="for_artists_project_click"
                 data-project-name={project.title}
                 key={project.slug}
