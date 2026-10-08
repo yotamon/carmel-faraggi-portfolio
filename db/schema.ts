@@ -11,6 +11,13 @@ export const contactSubmissions = sqliteTable("contact_submissions", {
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
+export const studioEventCounts = sqliteTable("studio_event_counts", {
+  eventDay: text("event_day").notNull(),
+  eventKey: text("event_key").notNull(),
+  eventPath: text("event_path").notNull(),
+  eventCount: integer("event_count").notNull().default(0),
+});
+
 export const studioCovers = sqliteTable("studio_covers", {
   id: text("id").primaryKey(),
   src: text("src").notNull().unique(),

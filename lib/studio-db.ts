@@ -17,6 +17,7 @@ async function createSchema() {
   const db = await getDatabase();
   await db.batch([
     db.prepare("CREATE TABLE IF NOT EXISTS contact_submissions (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, email TEXT NOT NULL, interest TEXT NOT NULL, project TEXT NOT NULL, submission_key TEXT NOT NULL UNIQUE, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"),
+    db.prepare("CREATE TABLE IF NOT EXISTS studio_event_counts (event_day TEXT NOT NULL, event_key TEXT NOT NULL, event_path TEXT NOT NULL, event_count INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (event_day,event_key,event_path))"),
     db.prepare("CREATE TABLE IF NOT EXISTS studio_covers (id TEXT PRIMARY KEY NOT NULL, src TEXT NOT NULL UNIQUE, alt TEXT NOT NULL, width INTEGER NOT NULL, storage_key TEXT, sort_order INTEGER NOT NULL DEFAULT 0, visible INTEGER NOT NULL DEFAULT 1, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"),
     db.prepare("CREATE TABLE IF NOT EXISTS studio_site_copy (content_key TEXT PRIMARY KEY NOT NULL, content_value TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"),
     db.prepare("CREATE TABLE IF NOT EXISTS studio_contact_state (submission_id INTEGER PRIMARY KEY NOT NULL, status TEXT NOT NULL DEFAULT 'new', updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"),

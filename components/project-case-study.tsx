@@ -39,7 +39,7 @@ export function ProjectCaseStudy({
       </div>
       <section className="case-copy" data-reveal>
         <h2>THE PROJECT</h2>
-        <p>{project.description}</p>
+        <div className="case-copy-text">{project.description.split(/\n\s*\n/).filter(Boolean).map((paragraph,index)=><p key={index}>{paragraph}</p>)}</div>
       </section>
       <div className="case-study-gallery">
         {project.gallery.map((image, index) => (

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import "./globals.css";
+import { AnalyticsBridge } from "@/components/analytics-bridge";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -76,6 +77,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(studioSchema).replace(/</g, "\\u003c") }} />
         <script dangerouslySetInnerHTML={{ __html: revealBootstrap }} />
+        <AnalyticsBridge />
         {children}
       </body>
     </html>

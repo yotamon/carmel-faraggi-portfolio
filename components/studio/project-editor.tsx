@@ -417,7 +417,7 @@ export function StudioProjectEditor({ initialProject }: { initialProject: Studio
 
             <label className="studio-field">
               <span>DESCRIPTION {form.status === "published" ? "*" : ""}</span>
-              <textarea value={form.description} onChange={(event) => update("description", event.target.value)} maxLength={5000} rows={7} placeholder="A short, clear overview of the project, the idea and what you created." />
+              <textarea value={form.description} onChange={(event) => update("description", event.target.value)} maxLength={5000} rows={7} placeholder="Describe the context, the creative idea and what you designed. Separate paragraphs with a blank line." />
               <small>{form.description.length}/5000</small>
             </label>
 
