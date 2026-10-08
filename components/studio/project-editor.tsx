@@ -355,7 +355,7 @@ export function StudioProjectEditor({ initialProject }: { initialProject: Studio
       <header className="studio-topbar">
         <a className="studio-brand" href="/studio"><span>CARMEL</span><strong>STUDIO</strong></a>
         <div className="studio-topbar-actions">
-          {canPreview ? <a href={"/studio/preview/" + projectId} target="_blank" rel="noreferrer">PREVIEW ↗</a> : null}
+          {canPreview ? <a href={"/studio/preview/" + projectId} target="_blank" rel="noreferrer">PREVIEW SAVED ↗</a> : null}
           <a href="/studio">ALL PROJECTS</a>
         </div>
       </header>
@@ -504,7 +504,19 @@ export function StudioProjectEditor({ initialProject }: { initialProject: Studio
               <span>03</span>
               <div><h2 id="studio-cover-heading">COVER IMAGE</h2><p>This is the image shown on the Work page and at the top of the case study.</p></div>
             </div>
-            <div className={"studio-upload-zone " + (form.hero ? "has-image" : "")}>
+            <div
+              className={"studio-upload-zone " + (form.hero ? "has-image" : "")}
+              onDragOver={(event) => {
+                if (disabled) return;
+                event.preventDefault();
+                event.dataTransfer.dropEffect = "copy";
+              }}
+              onDrop={(event) => {
+                if (disabled) return;
+                event.preventDefault();
+                void uploadHero(event.dataTransfer.files?.[0]);
+              }}
+            >
               {form.hero ? (
                 <div className="studio-cover-preview">
                   <img src={form.hero} alt={form.heroAlt || ""} />
