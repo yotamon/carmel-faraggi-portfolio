@@ -40,9 +40,11 @@ type ImageRow = {
 };
 
 function isCloudflareRuntimeUnavailable(error: unknown) {
-  if (!(error instanceof Error)) return false;
-  const code = "code" in error ? String((error as Error & { code?: unknown }).code ?? "") : "";
-  return code === "ERR_UNSUPPORTED_ESM_URL_SCHEME" || error.message.includes("cloudflare:");
+  if (!error || typeof error !== "object") return false;
+  const candidate = error as { code?: unknown; message?: unknown };
+  const code = String(candidate.code ?? "");
+  const message = String(candidate.message ?? "");
+  return code === "ERR_UNSUPPORTED_ESM_URL_SCHEME" || message.includes("cloudflare:");
 }
 
 let seedPromise: Promise<void> | null = null;
