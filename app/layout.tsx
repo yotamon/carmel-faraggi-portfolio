@@ -41,7 +41,6 @@ const studioSchema = {
   description: "Independent London design studio for brand identity, graphic design and art direction.",
   email: "carmelfaraggi@gmail.com",
   address: { "@type": "PostalAddress", addressLocality: "London", addressCountry: "GB" },
-  areaServed: "Worldwide",
   serviceType: ["Brand identity", "Graphic design", "Art direction", "Cover art", "Artist branding"],
 };
 

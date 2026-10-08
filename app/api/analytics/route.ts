@@ -22,6 +22,7 @@ export async function POST(request:Request) {
     const body=await request.json() as {event?:unknown;path?:unknown};
     const event=typeof body?.event==="string"?body.event:"";
     const path=typeof body?.path==="string"?body.path:"";
+    if(path.startsWith("/studio")||path.startsWith("/api"))return new Response(null,{status:204});
     if(!allowedEvents.has(event)||!/^\/[a-z0-9/-]{0,150}$/i.test(path))return new Response(null,{status:400});
     const day=new Date().toISOString().slice(0,10);
     const db=env.DB;

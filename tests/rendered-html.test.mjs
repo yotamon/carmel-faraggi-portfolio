@@ -246,3 +246,59 @@ test("Carmel Studio is private, storage-backed and leaves the public portfolio r
   assert.match(html, /does not receive your conversations/);
   assert.doesNotMatch(html, /YOUR WORK,.*YOUR CONTROL/s);
 });
+
+
+test("contact service options are accepted by the server", async () => {
+  const [client, server] = await Promise.all([
+    readFile(new URL("../components/contact-form.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/contact/route.ts", import.meta.url), "utf8"),
+  ]);
+  for (const option of ["Brand Identity", "Graphic Design", "One-off Project", "Music / Artist Visuals", "Not Sure Yet"]) {
+    assert.ok(client.includes('"' + option + '"'), "client missing option: " + option);
+    assert.ok(server.includes('"' + option + '"'), "server must accept option: " + option);
+  }
+  assert.match(server, /alreadySaved/);
+  assert.match(server, /notifyStudio/);
+});
+
+test("studio admin extensions all require authorization and preserve anonymous public pages", async () => {
+  const [contentApi, coversApi, inboxApi, insightsPage, homeSource, analytics] = await Promise.all([
+    readFile(new URL("../app/api/studio/content/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/studio/covers/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/studio/inbox/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/studio/insights/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/analytics/route.ts", import.meta.url), "utf8"),
+  ]);
+  for (const source of [contentApi,coversApi,inboxApi]) assert.match(source,/requireStudioApiUser/);
+  assert.match(insightsPage,/requireStudioPage/);
+  assert.match(homeSource,/getSiteCopy/);
+  assert.match(analytics,/allowedEvents/);
+  assert.match(analytics,/studio/);
+});
+
+test("new SEO endpoints expose published pages and hide the private studio", async () => {
+  const [sitemap, robots, projectPage, css] = await Promise.all([
+    readFile(new URL("../app/sitemap.xml/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/robots.txt/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/work/[slug]/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  assert.match(sitemap,/listPublishedProjects/);
+  assert.match(sitemap,/escapeXml/);
+  assert.match(robots,/Disallow: \/studio/);
+  assert.match(projectPage,/canonical/);
+  assert.match(css,/\.home-work-link\s*\{[^}]*display:\s*inline-flex/);
+});
+
+test("studio uploads can store browser-optimized WebP without an Images binding", async () => {
+  const [api,client,covers] = await Promise.all([
+    readFile(new URL("../app/api/studio/media/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../lib/client-image.ts", import.meta.url), "utf8"),
+    readFile(new URL("../lib/studio-covers.ts", import.meta.url), "utf8"),
+  ]);
+  assert.match(api,/if \(images\)/);
+  assert.match(api,/const isWebP/);
+  assert.match(client,/canvas\.toBlob/);
+  assert.match(covers,/studio_covers/);
+});

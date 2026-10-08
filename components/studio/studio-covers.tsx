@@ -5,18 +5,6 @@ import { prepareStudioImage } from "@/lib/client-image";
 import { useState } from "react";
 import type { EditableCover } from "@/lib/studio-covers";
 
-async function dimensions(file:File):Promise<{width:number;height:number}> {
-  const url=URL.createObjectURL(file);
-  try {
-    return await new Promise((resolve,reject)=>{
-      const img=new Image();
-      img.onload=()=>resolve({width:img.naturalWidth,height:img.naturalHeight});
-      img.onerror=()=>reject(new Error("Could not read the artwork dimensions."));
-      img.src=url;
-    });
-  }finally{URL.revokeObjectURL(url);}
-}
-
 export function StudioCovers({initialCovers,signOutHref}:{initialCovers:EditableCover[];signOutHref:string}) {
   const [items,setItems]=useState(initialCovers);
   const [saved,setSaved]=useState(JSON.stringify(initialCovers));

@@ -8,6 +8,7 @@ export function AnalyticsBridge() {
   useEffect(()=>{
     function record(event:string) {
       if(!/^[a-z][a-z0-9_]{2,64}$/.test(event))return;
+      if(window.location.pathname.startsWith("/studio") || window.location.pathname.startsWith("/api"))return;
       const payload=JSON.stringify({event,path:window.location.pathname});
       void fetch("/api/analytics",{method:"POST",headers:{"content-type":"application/json"},body:payload,keepalive:true}).catch(()=>{});
     }

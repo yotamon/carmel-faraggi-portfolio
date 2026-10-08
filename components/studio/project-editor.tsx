@@ -88,28 +88,6 @@ function emptyProject(): StudioProjectPayload {
   };
 }
 
-async function imageDimensions(file: File) {
-  if ("createImageBitmap" in window) {
-    const bitmap = await createImageBitmap(file);
-    const dimensions = { width: bitmap.width, height: bitmap.height };
-    bitmap.close();
-    return dimensions;
-  }
-  return new Promise<{ width: number; height: number }>((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const image = new Image();
-    image.onload = () => {
-      resolve({ width: image.naturalWidth, height: image.naturalHeight });
-      URL.revokeObjectURL(url);
-    };
-    image.onerror = () => {
-      reject(new Error("This image could not be read."));
-      URL.revokeObjectURL(url);
-    };
-    image.src = url;
-  });
-}
-
 function projectMediaKeys(project: StudioProject | null) {
   const keys: string[] = [];
   if (project?.heroStorageKey) keys.push(project.heroStorageKey);

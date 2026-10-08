@@ -1642,3 +1642,13 @@ html.js [data-reveal].is-visible { opacity: 1; translate: 0 0; }
 .studio-insights-table th, .studio-insights-table td { text-align: left; padding: 16px 12px; border-bottom: 1px solid rgba(13,13,13,.25); }
 .studio-insights-table th:last-child, .studio-insights-table td:last-child { text-align: right; }
 @media (max-width:620px) { .studio-insights { padding-top: 40px; } .studio-insights-table td, .studio-insights-table th { font-size: 12px; padding: 12px 6px; } }
+
+
+/* Reachable studio navigation on narrow screens without hiding the inbox */
+@media (max-width: 620px) {
+  .studio-topbar { gap: 12px; overflow: hidden; }
+  .studio-brand { flex: 0 0 auto; }
+  .studio-topbar-actions { min-width: 0; max-width: calc(100vw - 136px); overflow-x: auto; overscroll-behavior-x: contain; white-space: nowrap; scrollbar-width: thin; padding: 10px 2px; }
+  .studio-topbar-actions a:first-child { display: inline; }
+  .studio-topbar-actions a { flex: 0 0 auto; }
+}
