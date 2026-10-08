@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
     const sourceWidth = dimension(form.get("width"));
     const sourceHeight = dimension(form.get("height"));
-    const images = getImagesBinding();
+    const images = await getImagesBinding();
     if (!images) throw new StudioRequestError(503, "Image processing is temporarily unavailable. Please try again shortly.");
 
     const original = await file.arrayBuffer();
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     const key = "studio/" + new Date().getUTCFullYear() + "/" + crypto.randomUUID() + ".webp";
     const src = "/media/" + key;
 
-    const bucket = getMediaBucket();
+    const bucket = await getMediaBucket();
     await bucket.put(key, bytes, {
       httpMetadata: {
         contentType,
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const db = getDatabase();
+    const db = await getDatabase();
     await db.prepare("INSERT INTO portfolio_media (storage_key, src, content_type, width, height, size_bytes, attached_project_id, updated_at) VALUES (?, ?, ?, ?, ?, ?, NULL, CURRENT_TIMESTAMP)")
       .bind(key, src, contentType, width, height, bytes.byteLength)
       .run();
@@ -97,7 +97,7 @@ export async function DELETE(request: Request) {
     await ensureStudioSchema();
     const key = new URL(request.url).searchParams.get("key") ?? "";
     if (!key.startsWith("studio/")) throw new StudioRequestError(400, "Invalid media key.");
-    const db = getDatabase();
+    const db = await getDatabase();
     const media = await db.prepare("SELECT attached_project_id FROM portfolio_media WHERE storage_key = ? LIMIT 1")
       .bind(key)
       .first<{ attached_project_id: string | null }>();

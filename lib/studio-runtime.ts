@@ -1,4 +1,8 @@
-import { env } from "cloudflare:workers";
+type RuntimeBindings = {
+  DB?: D1Database;
+  MEDIA?: R2Bucket;
+  IMAGES?: StudioImagesBinding;
+};
 
 export type StudioImagesBinding = {
   input(stream: ReadableStream): {
@@ -8,28 +12,32 @@ export type StudioImagesBinding = {
   };
 };
 
-type RuntimeBindings = {
-  DB?: D1Database;
-  MEDIA?: R2Bucket;
-  IMAGES?: StudioImagesBinding;
-};
+let bindingsPromise: Promise<RuntimeBindings> | null = null;
 
-function bindings() {
-  return env as unknown as RuntimeBindings;
+async function bindings(): Promise<RuntimeBindings> {
+  if (!bindingsPromise) {
+    bindingsPromise = import("cloudflare:workers")
+      .then(({ env }) => env as unknown as RuntimeBindings)
+      .catch((error) => {
+        bindingsPromise = null;
+        throw error;
+      });
+  }
+  return bindingsPromise;
 }
 
-export function getDatabase(): D1Database {
-  const db = bindings().DB;
+export async function getDatabase(): Promise<D1Database> {
+  const db = (await bindings()).DB;
   if (!db) throw new Error("Carmel Studio database binding is unavailable.");
   return db;
 }
 
-export function getMediaBucket(): R2Bucket {
-  const bucket = bindings().MEDIA;
+export async function getMediaBucket(): Promise<R2Bucket> {
+  const bucket = (await bindings()).MEDIA;
   if (!bucket) throw new Error("Carmel Studio media storage is unavailable.");
   return bucket;
 }
 
-export function getImagesBinding(): StudioImagesBinding | null {
-  return bindings().IMAGES ?? null;
+export async function getImagesBinding(): Promise<StudioImagesBinding | null> {
+  return (await bindings()).IMAGES ?? null;
 }

@@ -14,7 +14,7 @@ export function ensureStudioSchema() {
 }
 
 async function createSchema() {
-  const db = getDatabase();
+  const db = await getDatabase();
   await db.batch([
     db.prepare("CREATE TABLE IF NOT EXISTS portfolio_projects (id TEXT PRIMARY KEY NOT NULL, slug TEXT NOT NULL UNIQUE, title TEXT NOT NULL, category TEXT NOT NULL, project_group TEXT NOT NULL, year TEXT NOT NULL, services_json TEXT NOT NULL DEFAULT '[]', layout TEXT NOT NULL DEFAULT 'left', description TEXT NOT NULL DEFAULT '', hero_src TEXT NOT NULL DEFAULT '', hero_alt TEXT NOT NULL DEFAULT '', hero_width INTEGER NOT NULL DEFAULT 1, hero_height INTEGER NOT NULL DEFAULT 1, hero_storage_key TEXT, status TEXT NOT NULL DEFAULT 'draft', sort_order INTEGER NOT NULL DEFAULT 0, version INTEGER NOT NULL DEFAULT 1, published_at TEXT, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"),
     db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS portfolio_projects_slug_unique ON portfolio_projects (slug)"),

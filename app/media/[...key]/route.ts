@@ -11,7 +11,7 @@ async function serve(context: { params: Promise<{ key: string[] }> }, head = fal
   const key = mediaKey(parts);
   if (!key) return new Response("Not found", { status: 404 });
   try {
-    const object = await getMediaBucket().get(key);
+    const object = await (await getMediaBucket()).get(key);
     if (!object) return new Response("Not found", { status: 404 });
     const headers = new Headers();
     object.writeHttpMetadata(headers);

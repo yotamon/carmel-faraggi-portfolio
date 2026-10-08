@@ -5,8 +5,8 @@ export async function deleteStudioMedia(keys: string[]) {
   const unique = [...new Set(keys.filter((key) => key.startsWith("studio/")))];
   if (!unique.length) return;
   await ensureStudioSchema();
-  const bucket = getMediaBucket();
-  const db = getDatabase();
+  const bucket = await getMediaBucket();
+  const db = await getDatabase();
   for (const key of unique) {
     try {
       await bucket.delete(key);
@@ -21,7 +21,7 @@ export async function deleteStudioMedia(keys: string[]) {
 export async function cleanupStaleStudioMedia() {
   try {
     await ensureStudioSchema();
-    const db = getDatabase();
+    const db = await getDatabase();
     const result = await db.prepare("SELECT storage_key FROM portfolio_media WHERE attached_project_id IS NULL AND created_at < datetime('now', '-48 hours') ORDER BY created_at LIMIT 20")
       .all<{ storage_key: string }>();
     const keys = (result.results ?? []).map((row) => row.storage_key);

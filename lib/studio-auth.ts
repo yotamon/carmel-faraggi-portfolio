@@ -8,7 +8,7 @@ export async function getStudioAccess(user: ChatGPTUser | null) {
   if (!user) return { user: null, allowed: false };
   try {
     await ensureStudioSchema();
-    const db = getDatabase();
+    const db = await getDatabase();
     const email = user.email.trim().toLowerCase();
     const admin = await db.prepare("SELECT email, role FROM studio_admins WHERE lower(email) = ? LIMIT 1")
       .bind(email)

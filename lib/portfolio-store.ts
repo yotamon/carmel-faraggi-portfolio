@@ -53,7 +53,7 @@ async function ensurePortfolioReady() {
 }
 
 async function seedLegacyProjects() {
-  const db = getDatabase();
+  const db = await getDatabase();
   const statements: D1PreparedStatement[] = [];
   legacyProjects.forEach((project, projectIndex) => {
     const id = "legacy-" + project.slug;
@@ -117,7 +117,7 @@ function projectStatus(value: string): ProjectStatus {
 
 async function hydrate(rows: ProjectRow[]) {
   if (!rows.length) return [] as StudioProject[];
-  const db = getDatabase();
+  const db = await getDatabase();
   const placeholders = rows.map(() => "?").join(",");
   const imageResult = await db.prepare("SELECT id, project_id, src, storage_key, alt, width, height, sort_order FROM portfolio_images WHERE project_id IN (" + placeholders + ") ORDER BY project_id, sort_order, id")
     .bind(...rows.map((row) => row.id))
@@ -162,7 +162,7 @@ async function hydrate(rows: ProjectRow[]) {
 }
 
 async function queryProjects(whereSql: string, binds: unknown[] = []) {
-  const db = getDatabase();
+  const db = await getDatabase();
   const result = await db.prepare(
     "SELECT id, slug, title, category, project_group, year, services_json, layout, description, hero_src, hero_alt, hero_width, hero_height, hero_storage_key, status, sort_order, version, published_at, created_at, updated_at FROM portfolio_projects " +
       whereSql +
@@ -196,7 +196,7 @@ export async function getPublishedProject(slug: string): Promise<Project | undef
 export async function getPublishedProjectRedirect(slug: string): Promise<string | null> {
   try {
     await ensurePortfolioReady();
-    const db = getDatabase();
+    const db = await getDatabase();
     const row = await db.prepare(
       "SELECT p.slug FROM portfolio_slug_redirects r JOIN portfolio_projects p ON p.id = r.project_id WHERE r.old_slug = ? AND p.status = 'published' LIMIT 1",
     ).bind(slug).first<{ slug: string }>();
@@ -304,7 +304,7 @@ function isAllowedMediaPath(src: string) {
 }
 
 async function assertUniqueSlug(slug: string, exceptId?: string) {
-  const db = getDatabase();
+  const db = await getDatabase();
   const row = exceptId
     ? await db.prepare("SELECT id FROM portfolio_projects WHERE slug = ? AND id <> ? LIMIT 1").bind(slug, exceptId).first<{ id: string }>()
     : await db.prepare("SELECT id FROM portfolio_projects WHERE slug = ? LIMIT 1").bind(slug).first<{ id: string }>();
@@ -363,7 +363,7 @@ export async function createStudioProject(input: StudioProjectPayload, actor: Ch
   await ensurePortfolioReady();
   const data = validatePayload(input);
   await assertUniqueSlug(data.slug);
-  const db = getDatabase();
+  const db = await getDatabase();
   const max = await db.prepare("SELECT COALESCE(MAX(sort_order), 0) AS value FROM portfolio_projects WHERE project_group = ?")
     .bind(data.group)
     .first<{ value: number }>();
@@ -389,7 +389,7 @@ export async function updateStudioProject(id: string, input: StudioProjectPayloa
   if (Number(input.version) !== existing.version) throw new StudioRequestError(409, "This project changed in another tab. Reload before saving again.");
   const data = validatePayload(input);
   await assertUniqueSlug(data.slug, id);
-  const db = getDatabase();
+  const db = await getDatabase();
   const nextVersion = existing.version + 1;
 
   let sortOrder = existing.sortOrder;
@@ -447,7 +447,7 @@ export async function archiveStudioProject(id: string, version: number, actor: C
   const existing = await getStudioProject(id);
   if (!existing) throw new StudioRequestError(404, "Project not found.");
   if (version !== existing.version) throw new StudioRequestError(409, "This project changed in another tab. Reload before archiving.");
-  const db = getDatabase();
+  const db = await getDatabase();
   const nextVersion = existing.version + 1;
   const result = await db.batch([
     db.prepare("UPDATE portfolio_projects SET status = 'archived', version = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND version = ?").bind(nextVersion, id, version),
@@ -468,7 +468,7 @@ export async function reorderStudioProjects(group: Project["group"], ids: string
   if (ids.length !== expected.size || ids.some((id) => !expected.has(id))) {
     throw new StudioRequestError(409, "The project list changed. Reload before reordering.");
   }
-  const db = getDatabase();
+  const db = await getDatabase();
   const statements = ids.map((id, index) =>
     db.prepare("UPDATE portfolio_projects SET sort_order = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND project_group = ?")
       .bind((index + 1) * 10, id, group),
