@@ -200,7 +200,7 @@ test("the corrected site keeps restrained interaction motion with an accessible 
 
 
 test("Carmel Studio is private, storage-backed and leaves the public portfolio resilient", async () => {
-  const [hosting, schema, studioPageSource, projectApi, mediaApi, publicWorkSource, storeSource, editorSource] = await Promise.all([
+  const [hosting, schema, studioPageSource, projectApi, mediaApi, publicWorkSource, storeSource, editorSource, authSource, securitySource] = await Promise.all([
     readFile(new URL("../.openai/hosting.json", import.meta.url), "utf8"),
     readFile(new URL("../db/schema.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/studio/page.tsx", import.meta.url), "utf8"),
@@ -209,6 +209,8 @@ test("Carmel Studio is private, storage-backed and leaves the public portfolio r
     readFile(new URL("../app/work/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../lib/portfolio-store.ts", import.meta.url), "utf8"),
     readFile(new URL("../components/studio/project-editor.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../lib/studio-auth.ts", import.meta.url), "utf8"),
+    readFile(new URL("../lib/studio-security.ts", import.meta.url), "utf8"),
   ]);
 
   assert.match(hosting, /"d1"\s*:\s*"DB"/);
@@ -216,16 +218,24 @@ test("Carmel Studio is private, storage-backed and leaves the public portfolio r
   assert.match(schema, /portfolioProjects/);
   assert.match(schema, /portfolioMedia/);
   assert.match(schema, /studioAdmins/);
+  assert.match(schema, /portfolioSlugRedirects/);
   assert.match(projectApi, /requireStudioApiUser/);
   assert.match(mediaApi, /assertSameOrigin/);
   assert.match(mediaApi, /image\/webp/);
   assert.match(publicWorkSource, /listPublishedProjects/);
   assert.match(storeSource, /legacyProjects/);
   assert.match(storeSource, /status = 'published'/);
+  assert.match(storeSource, /SELECT COUNT\(\*\) AS count FROM portfolio_projects/);
+  assert.match(storeSource, /assertMediaKeysAvailable/);
+  assert.match(storeSource, /portfolio_slug_redirects/);
   assert.match(editorSource, /SAVE DRAFT/);
   assert.match(editorSource, /PUBLISH/);
   assert.match(editorSource, /ALT TEXT/);
   assert.match(studioPageSource, /does not receive your conversations/);
+  assert.match(authSource, /admin\.user_id && admin\.user_id !== user\.userId/);
+  assert.match(securitySource, /isStudioStorageKey/);
+  assert.match(editorSource, /PREVIEW SAVED/);
+  assert.match(editorSource, /onDrop=/);
 
   const response = await render("/studio");
   assert.equal(response.status, 200);
