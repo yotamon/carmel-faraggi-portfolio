@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Navigation } from "@/components/navigation";
 import { ProjectCaseStudy } from "@/components/project-case-study";
-import { getNextPublishedProject, getPublishedProject } from "@/lib/portfolio-store";
+import { getNextPublishedProject, getPublishedProject, getPublishedProjectRedirect } from "@/lib/portfolio-store";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +30,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const project = await getPublishedProject(slug);
-  if (!project) notFound();
+  if (!project) {
+    const redirectSlug = await getPublishedProjectRedirect(slug);
+    if (redirectSlug) redirect("/work/" + redirectSlug);
+    notFound();
+  }
   const next = await getNextPublishedProject(project.slug);
 
   return (

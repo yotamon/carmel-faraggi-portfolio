@@ -193,6 +193,20 @@ export async function getPublishedProject(slug: string): Promise<Project | undef
   return projects.find((project) => project.slug === slug);
 }
 
+export async function getPublishedProjectRedirect(slug: string): Promise<string | null> {
+  try {
+    await ensurePortfolioReady();
+    const db = getDatabase();
+    const row = await db.prepare(
+      "SELECT p.slug FROM portfolio_slug_redirects r JOIN portfolio_projects p ON p.id = r.project_id WHERE r.old_slug = ? AND p.status = 'published' LIMIT 1",
+    ).bind(slug).first<{ slug: string }>();
+    return row?.slug ?? null;
+  } catch (error) {
+    console.error("Unable to resolve portfolio slug redirect.", error);
+    return null;
+  }
+}
+
 export async function getNextPublishedProject(slug: string): Promise<Project> {
   const current = await getPublishedProject(slug);
   if (!current) return legacyProjects[0];
@@ -295,6 +309,13 @@ async function assertUniqueSlug(slug: string, exceptId?: string) {
     ? await db.prepare("SELECT id FROM portfolio_projects WHERE slug = ? AND id <> ? LIMIT 1").bind(slug, exceptId).first<{ id: string }>()
     : await db.prepare("SELECT id FROM portfolio_projects WHERE slug = ? LIMIT 1").bind(slug).first<{ id: string }>();
   if (row) throw new StudioRequestError(409, "That URL slug is already used by another project.");
+
+  const redirect = await db.prepare("SELECT project_id FROM portfolio_slug_redirects WHERE old_slug = ? LIMIT 1")
+    .bind(slug)
+    .first<{ project_id: string }>();
+  if (redirect && redirect.project_id !== exceptId) {
+    throw new StudioRequestError(409, "That URL slug is reserved by an older project URL.");
+  }
 }
 
 function auditStatement(db: D1Database, actor: ChatGPTUser, action: string, entityId: string | null, details: Record<string, unknown>) {
@@ -302,11 +323,33 @@ function auditStatement(db: D1Database, actor: ChatGPTUser, action: string, enti
     .bind(actor.email.toLowerCase(), actor.userId, action, entityId, JSON.stringify(details));
 }
 
-function imageInsertStatements(db: D1Database, projectId: string, gallery: ReturnType<typeof validatePayload>["gallery"]) {
-  return gallery.map((image, index) =>
-    db.prepare("INSERT INTO portfolio_images (id, project_id, src, storage_key, alt, width, height, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-      .bind(crypto.randomUUID(), projectId, image.src, image.storageKey, image.alt, image.width, image.height, (index + 1) * 10),
-  );
+function imageInsertStatements(
+  db: D1Database,
+  projectId: string,
+  gallery: ReturnType<typeof validatePayload>["gallery"],
+  requiredVersion?: number,
+) {
+  return gallery.map((image, index) => {
+    const values = [crypto.randomUUID(), projectId, image.src, image.storageKey, image.alt, image.width, image.height, (index + 1) * 10];
+    if (requiredVersion === undefined) {
+      return db.prepare("INSERT INTO portfolio_images (id, project_id, src, storage_key, alt, width, height, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+        .bind(...values);
+    }
+    return db.prepare("INSERT INTO portfolio_images (id, project_id, src, storage_key, alt, width, height, sort_order) SELECT ?, ?, ?, ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM portfolio_projects WHERE id = ? AND version = ?)")
+      .bind(...values, projectId, requiredVersion);
+  });
+}
+
+function conditionalAuditStatement(
+  db: D1Database,
+  actor: ChatGPTUser,
+  action: string,
+  entityId: string,
+  details: Record<string, unknown>,
+  requiredVersion: number,
+) {
+  return db.prepare("INSERT INTO studio_audit_log (actor_email, actor_user_id, action, entity_type, entity_id, details_json) SELECT ?, ?, ?, 'project', ?, ? WHERE EXISTS (SELECT 1 FROM portfolio_projects WHERE id = ? AND version = ?)")
+    .bind(actor.email.toLowerCase(), actor.userId, action, entityId, JSON.stringify(details), entityId, requiredVersion);
 }
 
 function mediaKeys(project: StudioProject | ReturnType<typeof validatePayload>) {
@@ -348,23 +391,49 @@ export async function updateStudioProject(id: string, input: StudioProjectPayloa
   await assertUniqueSlug(data.slug, id);
   const db = getDatabase();
   const nextVersion = existing.version + 1;
+
+  let sortOrder = existing.sortOrder;
+  if (data.group !== existing.group || (existing.status === "archived" && data.status !== "archived")) {
+    const max = await db.prepare("SELECT COALESCE(MAX(sort_order), 0) AS value FROM portfolio_projects WHERE project_group = ? AND id <> ?")
+      .bind(data.group, id)
+      .first<{ value: number }>();
+    sortOrder = (Number(max?.value) || 0) + 10;
+  }
+
   const statements: D1PreparedStatement[] = [
-    db.prepare("UPDATE portfolio_projects SET slug = ?, title = ?, category = ?, project_group = ?, year = ?, services_json = ?, layout = ?, description = ?, hero_src = ?, hero_alt = ?, hero_width = ?, hero_height = ?, hero_storage_key = ?, status = ?, version = ?, published_at = CASE WHEN ? = 'published' THEN COALESCE(published_at, CURRENT_TIMESTAMP) ELSE published_at END, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND version = ?")
-      .bind(data.slug, data.title, data.category, data.group, data.year, JSON.stringify(data.services), data.layout, data.description, data.hero, data.heroAlt, data.heroWidth, data.heroHeight, data.heroStorageKey, data.status, nextVersion, data.status, id, existing.version),
-    db.prepare("DELETE FROM portfolio_images WHERE project_id = ?").bind(id),
-    ...imageInsertStatements(db, id, data.gallery),
+    db.prepare("UPDATE portfolio_projects SET slug = ?, title = ?, category = ?, project_group = ?, year = ?, services_json = ?, layout = ?, description = ?, hero_src = ?, hero_alt = ?, hero_width = ?, hero_height = ?, hero_storage_key = ?, status = ?, sort_order = ?, version = ?, published_at = CASE WHEN ? = 'published' THEN COALESCE(published_at, CURRENT_TIMESTAMP) ELSE published_at END, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND version = ?")
+      .bind(data.slug, data.title, data.category, data.group, data.year, JSON.stringify(data.services), data.layout, data.description, data.hero, data.heroAlt, data.heroWidth, data.heroHeight, data.heroStorageKey, data.status, sortOrder, nextVersion, data.status, id, existing.version),
+    db.prepare("DELETE FROM portfolio_images WHERE project_id = ? AND EXISTS (SELECT 1 FROM portfolio_projects WHERE id = ? AND version = ?)")
+      .bind(id, id, nextVersion),
+    ...imageInsertStatements(db, id, data.gallery, nextVersion),
   ];
+
+  if (data.slug !== existing.slug) {
+    statements.push(
+      db.prepare("DELETE FROM portfolio_slug_redirects WHERE old_slug = ? AND project_id = ? AND EXISTS (SELECT 1 FROM portfolio_projects WHERE id = ? AND version = ?)")
+        .bind(data.slug, id, id, nextVersion),
+      db.prepare("INSERT OR REPLACE INTO portfolio_slug_redirects (old_slug, project_id, created_at) SELECT ?, ?, CURRENT_TIMESTAMP WHERE EXISTS (SELECT 1 FROM portfolio_projects WHERE id = ? AND version = ?)")
+        .bind(existing.slug, id, id, nextVersion),
+    );
+  }
 
   const previousKeys = mediaKeys(existing);
   const nextKeys = mediaKeys(data);
   const removedStorageKeys = [...previousKeys].filter((key) => !nextKeys.has(key));
   for (const key of nextKeys) {
-    statements.push(db.prepare("UPDATE portfolio_media SET attached_project_id = ?, updated_at = CURRENT_TIMESTAMP WHERE storage_key = ?").bind(id, key));
+    statements.push(
+      db.prepare("UPDATE portfolio_media SET attached_project_id = ?, updated_at = CURRENT_TIMESTAMP WHERE storage_key = ? AND EXISTS (SELECT 1 FROM portfolio_projects WHERE id = ? AND version = ?)")
+        .bind(id, key, id, nextVersion),
+    );
   }
   for (const key of removedStorageKeys) {
-    statements.push(db.prepare("UPDATE portfolio_media SET attached_project_id = NULL, updated_at = CURRENT_TIMESTAMP WHERE storage_key = ? AND attached_project_id = ?").bind(key, id));
+    statements.push(
+      db.prepare("UPDATE portfolio_media SET attached_project_id = NULL, updated_at = CURRENT_TIMESTAMP WHERE storage_key = ? AND attached_project_id = ? AND EXISTS (SELECT 1 FROM portfolio_projects WHERE id = ? AND version = ?)")
+        .bind(key, id, id, nextVersion),
+    );
   }
-  statements.push(auditStatement(db, actor, "update", id, { slug: data.slug, status: data.status, version: nextVersion }));
+  statements.push(conditionalAuditStatement(db, actor, "update", id, { slug: data.slug, status: data.status, version: nextVersion }, nextVersion));
+
   const results = await db.batch(statements);
   const updateResult = results[0] as D1Result;
   if (!updateResult.success || Number(updateResult.meta?.changes ?? 0) !== 1) {
@@ -382,7 +451,7 @@ export async function archiveStudioProject(id: string, version: number, actor: C
   const nextVersion = existing.version + 1;
   const result = await db.batch([
     db.prepare("UPDATE portfolio_projects SET status = 'archived', version = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND version = ?").bind(nextVersion, id, version),
-    auditStatement(db, actor, "archive", id, { slug: existing.slug }),
+    conditionalAuditStatement(db, actor, "archive", id, { slug: existing.slug }, nextVersion),
   ]);
   const updateResult = result[0] as D1Result;
   if (!updateResult.success || Number(updateResult.meta?.changes ?? 0) !== 1) {
