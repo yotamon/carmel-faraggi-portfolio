@@ -1,5 +1,7 @@
 "use client";
 
+import { prepareStudioImage } from "@/lib/client-image";
+
 import { useState } from "react";
 import type { EditableCover } from "@/lib/studio-covers";
 
@@ -46,8 +48,8 @@ export function StudioCovers({initialCovers,signOutHref}:{initialCovers:Editable
     if(!file||!newAlt.trim()||busy||dirty)return;
     setBusy(true);setMessage("");
     try{
-      const size=await dimensions(file);
-      const form=new FormData();form.append("file",file);form.append("width",String(size.width));form.append("height",String(size.height));
+      const prepared=await prepareStudioImage(file);
+      const form=new FormData();form.append("file",prepared.file);form.append("width",String(prepared.width));form.append("height",String(prepared.height));
       const response=await fetch("/api/studio/media",{method:"POST",body:form});
       const json=await response.json() as {media?:{src:string;storageKey:string;width:number};error?:string};
       if(!response.ok||!json.media)throw new Error(json.error||"Upload failed.");

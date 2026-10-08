@@ -32,28 +32,43 @@ export async function POST(request: Request) {
     const sourceWidth = dimension(form.get("width"));
     const sourceHeight = dimension(form.get("height"));
     const images = await getImagesBinding();
-    if (!images) throw new StudioRequestError(503, "Image processing is temporarily unavailable. Please try again shortly.");
-
     const original = await file.arrayBuffer();
     const targetWidth = Math.min(sourceWidth, MAX_OUTPUT_WIDTH);
-    let response: Response;
-    try {
-      const transformed = await images
-        .input(new Blob([original], { type: file.type }).stream())
-        .transform({ width: targetWidth })
-        .output({ format: "image/webp", quality: 84 });
-      response = transformed.response();
-    } catch (error) {
-      console.error("Carmel Studio image processing failed", error);
-      throw new StudioRequestError(422, "This image could not be processed. Export it again as JPEG, PNG or WebP and retry.");
+    let bytes: ArrayBuffer;
+    let width: number;
+    let height: number;
+    if (images) {
+      let response: Response;
+      try {
+        const transformed = await images
+          .input(new Blob([original], { type: file.type }).stream())
+          .transform({ width: targetWidth })
+          .output({ format: "image/webp", quality: 84 });
+        response = transformed.response();
+      } catch (error) {
+        console.error("Carmel Studio image processing failed", error);
+        throw new StudioRequestError(422, "This image could not be processed. Try exporting it again as WebP.");
+      }
+      if (!response.ok) throw new StudioRequestError(422, "This image could not be processed. Please try another export.");
+      bytes = await response.arrayBuffer();
+      width = targetWidth;
+      height = Math.max(1, Math.round(sourceHeight * (targetWidth / sourceWidth)));
+    } else {
+      // ChatGPT Sites supplies D1 and R2. It does not necessarily supply
+      // Cloudflare Images; the browser prepares an optimized WebP instead.
+      const signature = new Uint8Array(original);
+      const isWebP = signature.length > 12 &&
+        signature[0] === 82 && signature[1] === 73 && signature[2] === 70 && signature[3] === 70 &&
+        signature[8] === 87 && signature[9] === 69 && signature[10] === 66 && signature[11] === 80;
+      if (file.type !== "image/webp" || !isWebP || file.size > 10 * 1024 * 1024 || sourceWidth > MAX_OUTPUT_WIDTH || sourceHeight > MAX_OUTPUT_WIDTH) {
+        throw new StudioRequestError(422, "Upload an optimized WebP image up to 2400px and 10MB. The Studio automatically prepares one in modern browsers.");
+      }
+      bytes = original;
+      width = sourceWidth;
+      height = sourceHeight;
     }
-    if (!response.ok) throw new StudioRequestError(422, "This image could not be processed. Export it again and retry.");
-
-    const bytes = await response.arrayBuffer();
-    if (!bytes.byteLength) throw new StudioRequestError(422, "The processed image was empty. Please try another export.");
+    if (!bytes.byteLength) throw new StudioRequestError(422, "The image was empty. Please try another export.");
     const contentType = "image/webp";
-    const width = targetWidth;
-    const height = Math.max(1, Math.round(sourceHeight * (targetWidth / sourceWidth)));
     const key = "studio/" + new Date().getUTCFullYear() + "/" + crypto.randomUUID() + ".webp";
     const src = "/media/" + key;
 

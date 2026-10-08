@@ -1,5 +1,7 @@
 "use client";
 
+import { prepareStudioImage } from "@/lib/client-image";
+
 import { useEffect, useMemo, useState } from "react";
 import type { StudioProject, StudioProjectPayload, UploadedStudioMedia } from "@/lib/studio-types";
 
@@ -177,11 +179,11 @@ export function StudioProjectEditor({ initialProject }: { initialProject: Studio
   }
 
   async function upload(file: File): Promise<UploadedStudioMedia> {
-    const dimensions = await imageDimensions(file);
+    const prepared = await prepareStudioImage(file);
     const data = new FormData();
-    data.set("file", file);
-    data.set("width", String(dimensions.width));
-    data.set("height", String(dimensions.height));
+    data.set("file", prepared.file);
+    data.set("width", String(prepared.width));
+    data.set("height", String(prepared.height));
     const response = await fetch("/api/studio/media", { method: "POST", body: data });
     const json = await response.json() as { media?: UploadedStudioMedia; error?: string };
     if (!response.ok || !json.media) throw new Error(json.error || "The image could not be uploaded.");
