@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 import { Navigation } from "@/components/navigation";
 import { ProjectCard } from "@/components/project-card";
-import { workProjects } from "@/lib/projects";
+import { listPublishedProjects } from "@/lib/portfolio-store";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Work — Carmel Faraggi Art & Design",
   description: "Selected brand identity, graphic design and art direction projects by Carmel Faraggi.",
 };
 
-export default function WorkPage() {
+export default async function WorkPage() {
+  const workProjects = await listPublishedProjects("commercial");
   return (
     <>
       <Navigation />
