@@ -5,6 +5,7 @@ import { Navigation } from "@/components/navigation";
 import { listPublishedProjects } from "@/lib/portfolio-store";
 import { responsiveSrcSet } from "@/lib/projects";
 import { getSiteCopy } from "@/lib/site-copy";
+import { listPublishedCovers } from "@/lib/studio-covers";
 
 /* eslint-disable @next/next/no-img-element -- vinext has no image optimizer; responsive sources are provided explicitly. */
 
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
 const services = ["ARTIST IDENTITY", "COVER ART", "RELEASE VISUALS", "SOCIAL CONTENT", "PRINT & MERCH"];
 
 export default async function ForArtistsPage() {
-  const [artistProjects, copy] = await Promise.all([listPublishedProjects("music-culture"), getSiteCopy()]);
+  const [artistProjects, copy, covers] = await Promise.all([listPublishedProjects("music-culture"), getSiteCopy(), listPublishedCovers()]);
   return (
     <>
       <Navigation />
@@ -84,7 +85,7 @@ export default async function ForArtistsPage() {
 
         <section className="artists-section selected-covers" aria-labelledby="selected-covers-title">
           <h2 id="selected-covers-title" className="artists-section-title">SELECTED COVERS</h2>
-          <CoverRail />
+          <CoverRail covers={covers} />
         </section>
 
         <section className="artists-section artists-services" aria-labelledby="artists-services-title">

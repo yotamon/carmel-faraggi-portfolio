@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { coverSrcSet, selectedCovers } from "@/lib/artists";
+import { coverSrcSet, type CoverArtwork } from "@/lib/artists";
 
 /* eslint-disable @next/next/no-img-element -- vinext has no image optimizer; responsive sources are provided explicitly. */
 
@@ -9,7 +9,7 @@ function trackInteraction() {
   window.dispatchEvent(new CustomEvent("carmel:analytics", { detail: { event: "selected_covers_interaction" } }));
 }
 
-export function CoverRail() {
+export function CoverRail({covers}: {covers: CoverArtwork[]}) {
   const railRef = useRef<HTMLDivElement>(null);
   const drag = useRef({ active: false, pointerId: 0, x: 0, scrollLeft: 0 });
   const tracked = useRef(false);
@@ -59,7 +59,7 @@ export function CoverRail() {
           event.currentTarget.classList.remove("is-dragging");
         }}
       >
-        {selectedCovers.map((cover) => (
+        {covers.map((cover) => (
           <figure className="cover-artwork" role="listitem" key={cover.src}>
             <img
               src={cover.src}

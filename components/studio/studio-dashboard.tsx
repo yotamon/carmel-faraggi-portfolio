@@ -167,6 +167,7 @@ export function StudioDashboard({
         <div className="studio-topbar-actions">
           <a href="/studio/inbox">INBOX{newInquiryCount ? " (" + newInquiryCount + ")" : ""}</a>
           <a href="/studio/content">SITE CONTENT</a>
+          <a href="/studio/covers">COVERS</a>
           <a href="/" target="_blank" rel="noreferrer">VIEW SITE ↗</a>
           <span className="studio-user">{userName}</span>
           <a href={signOutHref}>SIGN OUT</a>

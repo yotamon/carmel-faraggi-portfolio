@@ -11,6 +11,17 @@ export const contactSubmissions = sqliteTable("contact_submissions", {
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
+export const studioCovers = sqliteTable("studio_covers", {
+  id: text("id").primaryKey(),
+  src: text("src").notNull().unique(),
+  alt: text("alt").notNull(),
+  width: integer("width").notNull(),
+  storageKey: text("storage_key"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  visible: integer("visible").notNull().default(1),
+  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
 export const studioContactState = sqliteTable("studio_contact_state", {
   submissionId: integer("submission_id").primaryKey(),
   status: text("status").notNull().default("new"),

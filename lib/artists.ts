@@ -29,6 +29,7 @@ export const selectedCovers: CoverArtwork[] = [
 ];
 
 export function coverSrcSet(cover: CoverArtwork) {
+  if (!cover.src.endsWith("-full.webp")) return `${cover.src} ${cover.width}w`;
   const base = cover.src.replace(/-full\.webp$/, "");
   const variants = [240, 480]
     .filter((width) => width < cover.width)
