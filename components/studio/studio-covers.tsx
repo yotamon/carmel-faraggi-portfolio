@@ -2,6 +2,7 @@
 
 import { prepareStudioImage } from "@/lib/client-image";
 
+/* eslint-disable @next/next/no-img-element -- Studio media has already been optimized to WebP. */
 import { useState } from "react";
 import type { EditableCover } from "@/lib/studio-covers";
 
@@ -61,7 +62,7 @@ export function StudioCovers({initialCovers,signOutHref}:{initialCovers:Editable
     <section className="studio-cover-manager">
       <p className="studio-kicker">MUSIC + CULTURE / PORTFOLIO</p>
       <h1 className="display">SELECTED COVERS.</h1>
-      <p className="studio-cover-intro">Arrange the order, hide artwork that shouldn't appear and upload new covers. Built-in covers are protected from deletion. Give each artwork a meaningful image description.</p>
+      <p className="studio-cover-intro">Arrange the order, hide artwork that shouldn&apos;t appear and upload new covers. Built-in covers are protected from deletion. Give each artwork a meaningful image description.</p>
       <div className="studio-cover-add">
         <label>NEW ARTWORK IMAGE<input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy||dirty} onChange={event=>setFile(event.target.files?.[0]??null)}/></label>
         <label>IMAGE DESCRIPTION<input type="text" value={newAlt} maxLength={300} disabled={busy||dirty} onChange={event=>setNewAlt(event.target.value)} placeholder="Artist, release name and visual description"/></label>

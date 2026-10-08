@@ -47,7 +47,7 @@ export function StudioSiteContent({initialCopy,signOutHref}:{initialCopy:SiteCop
     <div className="studio-content-editor">
       <p className="studio-kicker">PRIVATE / TEXT CONTENT</p>
       <h1 className="display">YOUR WORDS.</h1>
-      <p className="studio-content-editor-lead">Edit text without changing the portfolio's design. The approved defaults remain until you save your changes. Published text updates on the public site.</p>
+      <p className="studio-content-editor-lead">Edit text without changing the portfolio&apos;s design. The approved defaults remain until you save your changes. Published text updates on the public site.</p>
       {groups.map(group=><section className="studio-content-group" key={group.title}>
         <h2>{group.title}</h2><p>{group.description} <a href={group.url} target="_blank" rel="noreferrer" className="studio-text-link">VIEW PAGE ↗</a></p>
         {group.fields.map(field=><label className="studio-field" key={field.key}>

@@ -31,7 +31,7 @@ export function StudioInbox({initialInquiries,signOutHref}: {initialInquiries:St
     <div className="studio-inbox">
       <p className="studio-kicker">PRIVATE / CLIENT ENQUIRIES</p>
       <h1 className="display">INBOX</h1>
-      <p className="studio-inbox-summary">Every successful website enquiry is saved here, even if optional email notifications are unavailable. Mark each one when you've replied.</p>
+      <p className="studio-inbox-summary">Every successful website enquiry is saved here, even if optional email notifications are unavailable. Mark each one when you&apos;ve replied.</p>
       <div className="studio-inbox-tabs" role="group" aria-label="Filter inquiries">
         {filters.map(value=><button type="button" key={value} className={filter===value?"is-active":""} aria-pressed={filter===value} onClick={()=>setFilter(value)}>{value.toUpperCase()} ({value==="all"?items.length:items.filter(item=>item.status===value).length})</button>)}
       </div>
